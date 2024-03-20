@@ -4,29 +4,35 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float speed = 7f;
+    [SerializeField] private float jumpForce = 7f;
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
-    private float smoothInput;
     private bool isGrounded;
-    private Rigidbody2D rb;
-    [SerializeField] private float jumpForce = 10f;
+    private int groundCount; // Keeps track of the number of ground contacts
 
     void Start()
     {
         bulby = GetComponent<Rigidbody2D>();
-        rb = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
+        // Handle player movement
+        HandleMovement();
 
+        // Handle player jumping
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            Jump();
+        }
+    }
+
+    void HandleMovement()
+    {
         var userInput = Input.GetAxis("Horizontal");
-        smoothInput = Mathf.Lerp(smoothInput, userInput, Time.fixedDeltaTime * 10f);
-
-        // Player Movement
-        float moveHorizontal = smoothInput * speed;
+        float moveHorizontal = userInput * speed;
         bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
 
         // Flip the sprite
@@ -38,11 +44,6 @@ public class Player : MonoBehaviour
         {
             bulbySprite.flipX = false;
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Jump();
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -50,6 +51,7 @@ public class Player : MonoBehaviour
         // Check if the player collides with the ground
         if (collision.gameObject.CompareTag("Ground"))
         {
+            groundCount++; // Increment ground contact count
             isGrounded = true;
         }
     }
@@ -59,14 +61,17 @@ public class Player : MonoBehaviour
         // Check if the player exits the ground
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = false;
+            groundCount--; // Decrement ground contact count
+            if (groundCount == 0) // If no more ground contacts
+            {
+                isGrounded = false;
+            }
         }
     }
 
     void Jump()
     {
-        Debug.Log("The player jumped");
-        
-        rb.AddForce(Vector2.up * jumpForce,ForceMode2D.Impulse);
+        // Perform the jump only when grounded
+        bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
     }
 }
