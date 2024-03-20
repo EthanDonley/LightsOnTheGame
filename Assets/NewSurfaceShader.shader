@@ -7,7 +7,12 @@ Shader "Custom/NewSurfaceShader"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" 
+               "ForceNoShadowCasting" = "True" }
+        Cull Off
+        Lighting Off // Disable lighting calculations
+        ZWrite On // Enable Z-write for correct depth sorting
+        ZTest Always // Always pass the Z-test
         Pass
         {
             CGPROGRAM
@@ -42,14 +47,17 @@ Shader "Custom/NewSurfaceShader"
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                float gray = 1.0 - dot(col.rgb, float3(0.299, 0.587, 0.114)); // Convert to grayscale and invert
+                float gray = dot(col.rgb, float3(0.299, 0.587, 0.114)); // Convert to grayscale
 
                 // Invert grayscale value if _IsInverted is greater than 0.5
                 if (_IsInverted > 0.5) {
                     gray = 1.0 - gray;
                 }
 
-                // Return gray value as grayscale color
+                // Invert grayscale value to map 0 to black and 1 to white
+                gray = 1.0 - gray;
+
+                // Return color with inverted grayscale
                 return fixed4(gray, gray, gray, col.a);
             }
             ENDCG
