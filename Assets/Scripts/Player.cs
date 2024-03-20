@@ -9,10 +9,13 @@ public class Player : MonoBehaviour
     private SpriteRenderer bulbySprite;
     private float smoothInput;
     private bool isGrounded;
+    private Rigidbody2D rb;
+    [SerializeField] private float jumpForce = 10f;
 
     void Start()
     {
         bulby = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
     }
 
@@ -35,6 +38,11 @@ public class Player : MonoBehaviour
         {
             bulbySprite.flipX = false;
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -53,5 +61,12 @@ public class Player : MonoBehaviour
         {
             isGrounded = false;
         }
+    }
+
+    void Jump()
+    {
+        Debug.Log("The player jumped");
+        
+        rb.AddForce(Vector2.up * jumpForce,ForceMode2D.Impulse);
     }
 }
