@@ -7,6 +7,7 @@ public class Crate : MonoBehaviour
     public float pushForce = 1f; // Force applied when the crate is pushed
     private Rigidbody2D rb;
     public float exaggerationFactor = 2f;
+    public float maxSpeed = 5f;
 
     public LightController lightController;
 
@@ -43,9 +44,14 @@ public class Crate : MonoBehaviour
             GetComponent<Collider2D>().sharedMaterial = null;
         }
 
+
         // Check if the crate is moving downward
         isGoingDown = rb.velocity.y < 0;
 
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
         // Check if the player is on top of the crate and prevent horizontal movement
         if (IsPlayerOnTop())
         {
