@@ -26,7 +26,7 @@ public class Crate : MonoBehaviour
         if (lightController.IsLightOn)
         {
             // Disable gravity and drag when lights are on
-            pushForce = 7f;
+            pushForce = 3f;
             rb.gravityScale = 0f;
             rb.drag = 0f;
 
@@ -69,38 +69,47 @@ public class Crate : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the collision is with the player
         if (collision.gameObject.CompareTag("Player") && lightController.IsLightOn)
         {
-            // Calculate the contact point between the crate and the player
-            ContactPoint2D[] contacts = new ContactPoint2D[1];
-            collision.GetContacts(contacts);
+            Vector2 contactNormal = collision.contacts[0].normal;
+            Vector2 direction = Vector2.zero;
 
-            // Check if the collision occurs at the bottom of the crate
-            foreach (ContactPoint2D contact in contacts)
+            if (Mathf.Abs(contactNormal.x) > Mathf.Abs(contactNormal.y))
             {
-                if (contact.normal.y > 0.9f) // Assuming upward direction is (0, 1)
-                {
-                    // Apply force to push the crate directly upwards
-                    rb.velocity = new Vector2(rb.velocity.x, pushForce);
-                    return; // Exit the loop after applying force
-                }
+                direction.x = Mathf.Sign(contactNormal.x);
+            }
+            else
+            {
+                direction.y = Mathf.Sign(contactNormal.y);
+            }
+
+            rb.velocity = direction * pushForce;
+
+            if (lightController.IsLightOn)
+            {
+                rb.velocity *= exaggerationFactor;
+            }
+        }
+        else
+        {
+            float pushDirection = Mathf.Sign(collision.transform.position.x - transform.position.x);
+            rb.AddForce(Vector2.right * pushDirection * pushForce, ForceMode2D.Impulse);
+
+            if (lightController.IsLightOn)
+            {
+                rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
             }
         }
 
-        // If the lights are off or the collision doesn't occur at the bottom, apply regular horizontal force
-        // Calculate push direction based on player's position relative to the crate
-        float pushDirection = Mathf.Sign(collision.transform.position.x - transform.position.x);
-
-        // Apply force to push the crate horizontally
-        rb.AddForce(Vector2.right * pushDirection * pushForce, ForceMode2D.Impulse);
-
-        if (lightController.IsLightOn)
+        if (Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.y))
         {
-            rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
+        }
+        else
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
         }
     }
-
     void FixedUpdate()
     {
         // Check if the crate is moving downward and prevent horizontal movement
