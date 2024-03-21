@@ -67,6 +67,16 @@ public class Player : MonoBehaviour
         var userInput = Input.GetAxis("Horizontal");
         float moveHorizontal = userInput * speed;
 
+        // Apply movement
+        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
+
+        // Apply air dampening if the player is in the air and not actively moving horizontally
+        if (!isTouchingGround && moveHorizontal == 0)
+        {
+            // Apply a dampening force to reduce horizontal velocity gradually
+            bulby.velocity = new Vector2(bulby.velocity.x * 0.95f, bulby.velocity.y);
+        }
+
         // Flip the sprite
         if (moveHorizontal < 0)
         {
@@ -76,9 +86,6 @@ public class Player : MonoBehaviour
         {
             bulbySprite.flipX = false;
         }
-
-        // Apply movement
-        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
