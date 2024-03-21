@@ -6,11 +6,17 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float speed = 7f;
     [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float wallSlideSpeed = 2f;
+    [SerializeField] private float wallJumpForce = 7f;
+
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Transform groundCheck;
 
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
-    private bool isGrounded;
-    private float coyoteTime = 0.2f;
+    private bool isTouchingWall;
+    private bool isWallSliding;
+    private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
@@ -27,7 +33,7 @@ public class Player : MonoBehaviour
         HandleMovement();
 
         // Update coyote time counter
-        if (isGrounded)
+        if (IsGrounded())
         {
             coyoteTimeCounter = coyoteTime;
         }
@@ -57,17 +63,28 @@ public class Player : MonoBehaviour
             bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.65f);
             coyoteTimeCounter = 0;
         }
+
+        // Check for wall sliding
+        if (isTouchingWall && !IsGrounded() && bulby.velocity.y < 0)
+        {
+            isWallSliding = true;
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+
+        // Apply wall sliding effect
+        if (isWallSliding)
+        {
+            bulby.velocity = new Vector2(bulby.velocity.x, -wallSlideSpeed);
+        }
     }
 
     void HandleMovement()
     {
         var userInput = Input.GetAxis("Horizontal");
         float moveHorizontal = userInput * speed;
-        if (!isGrounded)
-        {
-            moveHorizontal *= 0.8f;
-        }
-        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
 
         // Flip the sprite
         if (moveHorizontal < 0)
@@ -78,39 +95,60 @@ public class Player : MonoBehaviour
         {
             bulbySprite.flipX = false;
         }
+
+        // Apply movement
+        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the player collides with the ground
-        if (collision.gameObject.CompareTag("Ground"))
+        // Check if the player collides with the wall
+        if (collision.gameObject.layer == groundLayer)
         {
-            isGrounded = true;
+            isTouchingWall = true;
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        // Check if the player exits the ground
-        if (collision.gameObject.CompareTag("Ground"))
+        // Check if the player exits the wall
+        if (collision.gameObject.layer == groundLayer)
         {
-            isGrounded = false;
+            isTouchingWall = false;
+            isWallSliding = false;
         }
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     void Jump()
     {
-        Collider2D[] collidersAbove = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Ground"));
-
-        foreach (Collider2D collider in collidersAbove)
+        if (isWallSliding)
         {
-            if (collider.gameObject != gameObject) // Ignore collisions with the player itself
+            // Wall jump
+            Vector2 wallJumpDirection = Vector2.zero;
+            if (isTouchingWall)
             {
-                // If there's a collider above the player, exit the method and don't perform the jump
-                return;
+                // Jump away from the wall
+                wallJumpDirection = Vector2.up;
+                if (bulby.velocity.x < 0)
+                {
+                    wallJumpDirection += Vector2.right;
+                }
+                else
+                {
+                    wallJumpDirection += Vector2.left;
+                }
             }
+            bulby.velocity = wallJumpDirection.normalized * wallJumpForce;
         }
-
-        bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
+        else
+        {
+            // Regular jump
+            bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
+        }
     }
 }
