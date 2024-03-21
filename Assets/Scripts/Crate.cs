@@ -19,7 +19,7 @@ public class Crate : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Dynamic; // Set the rigidbody type to dynamic for physics interactions
-        rb.drag = 10f; // Add some linear drag to reduce sliding
+        rb.drag = 7f; // Add some linear drag to reduce sliding
     }
     void Update()
     {
@@ -36,8 +36,8 @@ public class Crate : MonoBehaviour
         else
         {
             pushForce = 1f;
-            rb.gravityScale = 7f;
-            rb.drag = 10f; // Adjust drag value as needed
+            rb.gravityScale = 5f;
+            rb.drag = 7f; // Adjust drag value as needed
 
             // Remove the physics material 2D from the crate's collider
             GetComponent<Collider2D>().sharedMaterial = null;
@@ -70,21 +70,34 @@ public class Crate : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if the collision is with the player
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && lightController.IsLightOn)
         {
-            // Get the player's rigidbody component
-            Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+            // Calculate the contact point between the crate and the player
+            ContactPoint2D[] contacts = new ContactPoint2D[1];
+            collision.GetContacts(contacts);
 
-            // Calculate push direction based on player's movement direction
-            float pushDirection = Mathf.Sign(playerRb.velocity.x);
-
-            // Apply force to push the crate
-            rb.AddForce(Vector2.right * pushDirection * pushForce, ForceMode2D.Impulse);
-
-            if (lightController.IsLightOn)
+            // Check if the collision occurs at the bottom of the crate
+            foreach (ContactPoint2D contact in contacts)
             {
-                rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
+                if (contact.normal.y > 0.9f) // Assuming upward direction is (0, 1)
+                {
+                    // Apply force to push the crate directly upwards
+                    rb.velocity = new Vector2(rb.velocity.x, pushForce);
+                    return; // Exit the loop after applying force
+                }
             }
+        }
+
+        // If the lights are off or the collision doesn't occur at the bottom, apply regular horizontal force
+        // Calculate push direction based on player's position relative to the crate
+        float pushDirection = Mathf.Sign(collision.transform.position.x - transform.position.x);
+
+        // Apply force to push the crate horizontally
+        rb.AddForce(Vector2.right * pushDirection * pushForce, ForceMode2D.Impulse);
+
+        if (lightController.IsLightOn)
+        {
+            rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
         }
     }
 

@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
     private bool isGrounded;
-    private float coyoteTime = 0.1f;
+    private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
@@ -100,6 +100,17 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        Collider2D[] collidersAbove = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Ground"));
+
+        foreach (Collider2D collider in collidersAbove)
+        {
+            if (collider.gameObject != gameObject) // Ignore collisions with the player itself
+            {
+                // If there's a collider above the player, exit the method and don't perform the jump
+                return;
+            }
+        }
+
         bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
     }
 }

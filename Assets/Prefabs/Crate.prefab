@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7099728050924861695}
   - component: {fileID: 9214831561625460792}
   - component: {fileID: 5668064158774384422}
-  - component: {fileID: 2692127842030716026}
+  - component: {fileID: 4906854742643819861}
   m_Layer: 0
   m_Name: Crate
   m_TagString: Ground
@@ -101,9 +101,9 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 5
   m_LinearDrag: 0
-  m_AngularDrag: 0
-  m_GravityScale: 7
-  m_Material: {fileID: 6200000, guid: c56f0dde7436f6a47a5187f521148715, type: 2}
+  m_AngularDrag: 0.05
+  m_GravityScale: 5
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -129,8 +129,9 @@ MonoBehaviour:
   pushForce: 1
   exaggerationFactor: 2
   lightController: {fileID: 0}
---- !u!60 &2692127842030716026
-PolygonCollider2D:
+  lightOnPhysicsMaterial: {fileID: 6200000, guid: c56f0dde7436f6a47a5187f521148715, type: 2}
+--- !u!61 &4906854742643819861
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -138,7 +139,7 @@ PolygonCollider2D:
   m_GameObject: {fileID: 3390220141185227483}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c56f0dde7436f6a47a5187f521148715, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -161,7 +162,7 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.017900586}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -171,10 +172,6 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -2.56, y: 2.56}
-      - {x: -2.56, y: -2.56}
-      - {x: 2.56, y: -2.56}
-      - {x: 2.56, y: 2.56}
-  m_UseDelaunayMesh: 0
+  serializedVersion: 2
+  m_Size: {x: 5.12, y: 5.084199}
+  m_EdgeRadius: 0
