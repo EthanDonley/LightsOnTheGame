@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class Crate : MonoBehaviour
 {
-    public float pushForce = 10f; // Force applied when the crate is pushed
+    public float pushForce = 1f; // Force applied when the crate is pushed
     private Rigidbody2D rb;
     public float exaggerationFactor = 2f;
 
     public LightController lightController;
+
+    // Boolean to track whether the crate is moving downward
+    private bool isGoingDown = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -21,15 +25,40 @@ public class Crate : MonoBehaviour
         if (lightController.IsLightOn)
         {
             // Disable gravity and drag when lights are on
+            pushForce = 7f;
             rb.gravityScale = 0f;
             rb.drag = 0f;
         }
         else
         {
-            // Enable gravity and drag when lights are off
+            pushForce = 1f;
             rb.gravityScale = 7f;
             rb.drag = 10f; // Adjust drag value as needed
         }
+
+        // Check if the crate is moving downward
+        isGoingDown = rb.velocity.y < 0;
+
+        // Check if the player is on top of the crate and prevent horizontal movement
+        if (IsPlayerOnTop())
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+        }
+    }
+
+    bool IsPlayerOnTop()
+    {
+        // Get the player's collider
+        Collider2D playerCollider = FindObjectOfType<Player>().GetComponent<Collider2D>();
+
+        // Check if the player's collider is directly above the crate's collider
+        RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, Vector2.down, 0.1f);
+        if (hit.collider != null && hit.collider.gameObject == gameObject)
+        {
+            return true;
+        }
+
+        return false;
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -50,7 +79,14 @@ public class Crate : MonoBehaviour
                 rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
             }
         }
+    }
 
-
+    void FixedUpdate()
+    {
+        // Check if the crate is moving downward and prevent horizontal movement
+        if (isGoingDown)
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+        }
     }
 }
