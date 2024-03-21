@@ -10,6 +10,8 @@ public class Crate : MonoBehaviour
 
     public LightController lightController;
 
+    public PhysicsMaterial2D lightOnPhysicsMaterial;
+
     // Boolean to track whether the crate is moving downward
     private bool isGoingDown = false;
 
@@ -19,7 +21,6 @@ public class Crate : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic; // Set the rigidbody type to dynamic for physics interactions
         rb.drag = 10f; // Add some linear drag to reduce sliding
     }
-
     void Update()
     {
         if (lightController.IsLightOn)
@@ -28,12 +29,18 @@ public class Crate : MonoBehaviour
             pushForce = 7f;
             rb.gravityScale = 0f;
             rb.drag = 0f;
+
+            // Apply the physics material 2D to the crate's collider
+            GetComponent<Collider2D>().sharedMaterial = lightOnPhysicsMaterial;
         }
         else
         {
             pushForce = 1f;
             rb.gravityScale = 7f;
             rb.drag = 10f; // Adjust drag value as needed
+
+            // Remove the physics material 2D from the crate's collider
+            GetComponent<Collider2D>().sharedMaterial = null;
         }
 
         // Check if the crate is moving downward
