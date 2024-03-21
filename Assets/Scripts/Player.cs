@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -18,10 +19,13 @@ public class Player : MonoBehaviour
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
 
+    Animator animator;
+
     void Start()
     {
         bulby = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -33,10 +37,12 @@ public class Player : MonoBehaviour
         if (IsGrounded())
         {
             coyoteTimeCounter = coyoteTime;
+            animator.SetBool("isJumping", false);
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
+
         }
 
         // Jump Buffer Stuff
@@ -52,14 +58,17 @@ public class Player : MonoBehaviour
         // Handle player jumping
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
+            animator.SetBool("isJumping", true);
             Jump();
             jumpBufferCounter = 0f;
+
         }
         if (Input.GetButtonUp("Jump") && bulby.velocity.y > 0f)
         {
             bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.5f);
             coyoteTimeCounter = 0;
         }
+
     }
 
     void HandleMovement()
@@ -86,6 +95,8 @@ public class Player : MonoBehaviour
         {
             bulbySprite.flipX = false;
         }
+        animator.SetFloat("xVelocity", Math.Abs(bulby.velocity.x));
+        animator.SetFloat("yVelocity", bulby.velocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -98,6 +109,7 @@ public class Player : MonoBehaviour
             {
                 if (contact.normal.y > 0.9f) // Assuming the normal.y value is close to 1 when the collision is from the top
                 {
+                    animator.SetBool("isJumping", false);
                     isTouchingGround = true;
                     break; // Exit the loop once a valid contact from the top is found
                 }
@@ -111,14 +123,27 @@ public class Player : MonoBehaviour
         if (collision.gameObject.layer == groundLayer)
         {
             isTouchingGround = false;
+            animator.SetBool("isJumping", true);
         }
     }
 
     private bool IsGrounded()
     {
-        // Check if the player is touching the ground layer or the platform effector from the top
-        return isTouchingGround ||
-               Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        float raycastLength = 0.1f; // Adjust the length of the raycast
+
+        // Cast a ray downward from the player's feet position
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, raycastLength, groundLayer);
+
+        // If the ray hits the ground layer, the player is considered grounded
+        if (hit.collider != null)
+        {
+            animator.SetBool("isJumping", false);
+            return true;
+        }
+
+        // If no ground is detected below the player, set isJumping to true
+        animator.SetBool("isJumping", true);
+        return false;
     }
 
 
@@ -130,5 +155,7 @@ public class Player : MonoBehaviour
             return; // Don't apply jump if already jumping with sufficient velocity
         }
         bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
+
+        animator.SetBool("isJumping", true);
     }
 }
