@@ -6,16 +6,13 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float speed = 7f;
     [SerializeField] private float jumpForce = 7f;
-    [SerializeField] private float wallSlideSpeed = 2f;
-    [SerializeField] private float wallJumpForce = 7f;
 
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform groundCheck;
 
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
-    private bool isTouchingWall;
-    private bool isWallSliding;
+    private bool isTouchingGround;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
@@ -60,24 +57,8 @@ public class Player : MonoBehaviour
         }
         if (Input.GetButtonUp("Jump") && bulby.velocity.y > 0f)
         {
-            bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.65f);
+            bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.5f);
             coyoteTimeCounter = 0;
-        }
-
-        // Check for wall sliding
-        if (isTouchingWall && !IsGrounded() && bulby.velocity.y < 0)
-        {
-            isWallSliding = true;
-        }
-        else
-        {
-            isWallSliding = false;
-        }
-
-        // Apply wall sliding effect
-        if (isWallSliding)
-        {
-            bulby.velocity = new Vector2(bulby.velocity.x, -wallSlideSpeed);
         }
     }
 
@@ -102,10 +83,18 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the player collides with the wall
+        // Check if the player collides with the ground layer
         if (collision.gameObject.layer == groundLayer)
         {
-            isTouchingWall = true;
+            // Check if the collision contact is from the top
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.9f) // Assuming the normal.y value is close to 1 when the collision is from the top
+                {
+                    isTouchingGround = true;
+                    break; // Exit the loop once a valid contact from the top is found
+                }
+            }
         }
     }
 
@@ -114,41 +103,25 @@ public class Player : MonoBehaviour
         // Check if the player exits the wall
         if (collision.gameObject.layer == groundLayer)
         {
-            isTouchingWall = false;
-            isWallSliding = false;
+            isTouchingGround = false;
         }
     }
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        // Check if the player is touching the ground layer or the platform effector from the top
+        return isTouchingGround ||
+               Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
+
 
     void Jump()
     {
-        if (isWallSliding)
+        // Check if the player is already jumping with a velocity greater than or equal to the standard jumping velocity
+        if (Mathf.Abs(bulby.velocity.y) >= jumpForce)
         {
-            // Wall jump
-            Vector2 wallJumpDirection = Vector2.zero;
-            if (isTouchingWall)
-            {
-                // Jump away from the wall
-                wallJumpDirection = Vector2.up;
-                if (bulby.velocity.x < 0)
-                {
-                    wallJumpDirection += Vector2.right;
-                }
-                else
-                {
-                    wallJumpDirection += Vector2.left;
-                }
-            }
-            bulby.velocity = wallJumpDirection.normalized * wallJumpForce;
+            return; // Don't apply jump if already jumping with sufficient velocity
         }
-        else
-        {
-            // Regular jump
-            bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
-        }
+        bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
     }
 }
