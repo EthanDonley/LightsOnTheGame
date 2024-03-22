@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform groundCheck;
 
+    public Transform checkpoint;
+
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
     private bool isTouchingGround;
@@ -26,6 +28,12 @@ public class Player : MonoBehaviour
         bulby = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+
+        if (checkpoint != null)
+        {
+            Vector2 checkpointPosition = checkpoint.position;
+            transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
+        }
     }
 
     void Update()

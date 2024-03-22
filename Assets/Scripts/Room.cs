@@ -7,6 +7,9 @@ public class Room : MonoBehaviour
     public GameObject virtualCam;
     public float offset = 8f;
     private bool canOffsetPlayer = false;
+    public Transform leftApproachCheckpoint;
+    public Transform rightApproachCheckpoint;
+    public Player player;
 
 
     private void Start()
@@ -23,25 +26,30 @@ public class Room : MonoBehaviour
     {
         if (other.CompareTag("Player") && !other.isTrigger)
         {
+            
+            Vector2 playerPos = other.transform.position;
+            Vector2 roomPos = transform.position;
             if (canOffsetPlayer)
             {
-                Vector2 playerPos = other.transform.position;
-                Vector2 roomPos = transform.position;
+                
 
                 if (playerPos.x < roomPos.x)
                 {
                     playerPos.x += offset;
+                    player.checkpoint = leftApproachCheckpoint.transform;
                 }
                 else
                 {
                     playerPos.x -= offset;
+                    player.checkpoint = rightApproachCheckpoint.transform;
                 }
 
                 other.transform.position = playerPos;
             }
-
             virtualCam.SetActive(true);
         }
+        
+
     }
 
     private void OnTriggerExit2D(Collider2D other)
