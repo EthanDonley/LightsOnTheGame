@@ -5,7 +5,7 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     public GameObject virtualCam;
-    public float offset = 4f;
+    public float offset = 8f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
