@@ -1903,7 +1903,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
+  m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -2440,7 +2440,7 @@ Transform:
   m_GameObject: {fileID: 1161505214}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.0538921, y: -0.062491894, z: -10}
+  m_LocalPosition: {x: -1.55, y: -0.066040516, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3013,7 +3013,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 775356668969177395, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20.39
+      value: 20.869799
       objectReference: {fileID: 0}
     - target: {fileID: 775356668969177395, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3053,7 +3053,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1107613495399021869, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -27.3198
+      value: -28.609999
+      objectReference: {fileID: 0}
+    - target: {fileID: 1107613495399021869, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.2864437
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[0].x
+      value: -14.338676
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[0].y
+      value: 1.3778787
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[1].y
+      value: -8.607596
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[3].x
+      value: 3.357369
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[3].y
+      value: -8.621153
       objectReference: {fileID: 0}
     - target: {fileID: 7336051747610901886, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_Follow
@@ -3361,7 +3385,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Use Arrow Keys or WASD \n\t   to Move"
+  m_text: "Use Arrow Keys or WASD \n\t to Move"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 33e501813de3d634c8d87a29344075e9, type: 2}
   m_sharedMaterial: {fileID: 2589117356692545621, guid: 33e501813de3d634c8d87a29344075e9, type: 2}
@@ -3491,7 +3515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -6.76, y: -2.02}
+  m_AnchoredPosition: {x: -5.31, y: -2.02}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1693985003
@@ -3955,7 +3979,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 775356668969177395, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.1902003
+      value: 3.42
       objectReference: {fileID: 0}
     - target: {fileID: 775356668969177395, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3995,12 +4019,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1107613495399021869, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.700001
+      value: -9.56045
+      objectReference: {fileID: 0}
+    - target: {fileID: 1107613495399021869, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -7.9864435
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[1].x
+      value: -14.390887
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[1].y
+      value: -8.636681
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[3].x
+      value: 3.4000754
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900287385140168283, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[3].y
+      value: -8.60833
+      objectReference: {fileID: 0}
+    - target: {fileID: 5046616969222788959, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_ScreenX
+      value: 0.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 5046616969222788959, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_ScreenY
+      value: 0.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 5046616969222788959, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_TargetMovementOnly
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7336051747610901886, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_Follow
       value: 
       objectReference: {fileID: 103049971}
+    - target: {fileID: 7336051747610901886, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
+      propertyPath: m_Lens.OrthographicSize
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7692228684761899878, guid: 7ca99b2db6f32484b830753c0430025f, type: 3}
       propertyPath: m_IsActive
       value: 0
