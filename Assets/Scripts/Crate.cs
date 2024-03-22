@@ -77,6 +77,7 @@ public class Crate : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player") && lightController.IsLightOn)
         {
+            // Handle player collision
             Vector2 contactNormal = collision.contacts[0].normal;
             Vector2 direction = Vector2.zero;
 
@@ -98,22 +99,22 @@ public class Crate : MonoBehaviour
         }
         else
         {
+            // Handle other collisions
             float pushDirection = Mathf.Sign(collision.transform.position.x - transform.position.x);
-            rb.AddForce(Vector2.right * pushDirection * pushForce, ForceMode2D.Impulse);
+            rb.AddForce(Vector2.right * Mathf.Abs(pushDirection) * pushForce, ForceMode2D.Impulse);
 
             if (lightController.IsLightOn)
             {
                 rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
             }
-        }
 
-        if (Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.y))
-        {
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
-        }
-        else
-        {
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            // Check if the collided object is stationary
+            Rigidbody2D otherRigidbody = collision.collider.attachedRigidbody;
+            if (otherRigidbody != null && otherRigidbody.bodyType == RigidbodyType2D.Static)
+            {
+                // Zero out the velocity if the collided object is stationary
+                rb.velocity = Vector2.zero;
+            }
         }
     }
     void FixedUpdate()
