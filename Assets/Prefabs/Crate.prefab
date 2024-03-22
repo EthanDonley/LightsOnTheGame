@@ -99,7 +99,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 2
+  m_Mass: 7
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 5
@@ -126,11 +126,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31815f063962dde488f14e67a2642537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushForce: 1
+  pushForce: 2
   exaggerationFactor: 3
-  maxSpeed: 5.5
+  maxSpeed: 5
   lightController: {fileID: 0}
   lightOnPhysicsMaterial: {fileID: 6200000, guid: c56f0dde7436f6a47a5187f521148715, type: 2}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!61 &4906854742643819861
 BoxCollider2D:
   m_ObjectHideFlags: 0

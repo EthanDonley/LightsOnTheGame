@@ -16,6 +16,8 @@ public class Crate : MonoBehaviour
     // Boolean to track whether the crate is moving downward
     private bool isGoingDown = false;
 
+    public LayerMask groundLayer;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -57,6 +59,11 @@ public class Crate : MonoBehaviour
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
         }
+
+        if (isGoingDown && !IsGrounded())
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+        }
     }
 
     bool IsPlayerOnTop()
@@ -68,8 +75,11 @@ public class Crate : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, Vector2.down, 0.1f);
         if (hit.collider != null && hit.collider.gameObject == gameObject)
         {
+            Debug.Log("Im a top");
             return true;
         }
+
+      
 
         return false;
     }
@@ -83,7 +93,7 @@ public class Crate : MonoBehaviour
 
             if (Mathf.Abs(contactNormal.x) > Mathf.Abs(contactNormal.y))
             {
-                direction.x = Mathf.Sign(contactNormal.x);
+                direction.x = Mathf.Sign(collision.relativeVelocity.x); // Use relative velocity direction
             }
             else
             {
@@ -100,12 +110,16 @@ public class Crate : MonoBehaviour
         else
         {
             // Handle other collisions
-            float pushDirection = Mathf.Sign(collision.transform.position.x - transform.position.x);
-            rb.AddForce(Vector2.right * Mathf.Abs(pushDirection) * pushForce, ForceMode2D.Impulse);
+            Vector2 pushDirection = (collision.transform.position - transform.position).normalized; // Calculate direction between objects
+
+            // Calculate push force magnitude
+            float pushForceMagnitude = Mathf.Abs(Vector2.Dot(rb.velocity, pushDirection)) * pushForce;
+
+            rb.AddForce(pushDirection * pushForceMagnitude, ForceMode2D.Impulse);
 
             if (lightController.IsLightOn)
             {
-                rb.AddForce(Vector2.right * pushDirection * pushForce * exaggerationFactor, ForceMode2D.Impulse);
+                rb.AddForce(pushDirection * pushForceMagnitude * exaggerationFactor, ForceMode2D.Impulse);
             }
 
             // Check if the collided object is stationary
@@ -117,12 +131,14 @@ public class Crate : MonoBehaviour
             }
         }
     }
-    void FixedUpdate()
+
+    bool IsGrounded()
     {
-        // Check if the crate is moving downward and prevent horizontal movement
-        if (isGoingDown)
-        {
-            rb.velocity = new Vector2(0f, rb.velocity.y);
-        }
+        // Cast a ray downward to check for ground collision
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, groundLayer);
+
+        // Return true if the ray hits the ground layer
+        return hit.collider != null;
     }
+
 }
