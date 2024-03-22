@@ -45,7 +45,7 @@ Shader "Custom/NewSurfaceShader"
             }
 
             fixed4 frag(v2f i) : SV_Target
-            {
+{
                 fixed4 col = tex2D(_MainTex, i.uv);
                 float gray = dot(col.rgb, float3(0.299, 0.587, 0.114)); // Convert to grayscale
 
@@ -57,7 +57,7 @@ Shader "Custom/NewSurfaceShader"
                 // Invert grayscale value to map 0 to black and 1 to white
                 gray = 1.0 - gray;
 
-                // Return color with inverted grayscale
+                // Return color with inverted grayscale, preserving alpha
                 return fixed4(gray, gray, gray, col.a);
             }
             ENDCG
