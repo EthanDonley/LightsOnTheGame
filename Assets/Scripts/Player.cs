@@ -21,11 +21,11 @@ public class Player : MonoBehaviour
     private bool bufferedHalfJump = false;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
-    private float jumpBufferTime = 0.15f;
+    private float jumpBufferTime = 0.1f;
     private float jumpBufferCounter;
     private float[] RayXPositions;
 
-    float PlayerHeight = 1.0f;
+    float PlayerHeight = 0.6f;
     float ToeFeelDistance = 0.1f;
 
     public NewReset dead;
@@ -211,7 +211,7 @@ public class Player : MonoBehaviour
     {
         if (bulby.velocity.y < 0.01f)
         {
-            // cast a bunch, left to right, looking for ground
+            //cast a bunch, left to right, looking for ground
             foreach (var xposition in RayXPositions)
             {
                 RaycastHit2D hit = Physics2D.Raycast(

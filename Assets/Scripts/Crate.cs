@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Crate : MonoBehaviour
 {
-    public float pushForce = 1f; // Force applied when the crate is pushed
+    public float pushForce = 1f; //This is primarily used when lights are off
     private Rigidbody2D rb;
-    public float exaggerationFactor = 2f;
+    public float exaggerationFactor = 2f; //This is mostly for calculations for box speed
     public float maxSpeed = 5f;
+    public float maxSpeedDark = 8f;
 
     public LightController lightController;
 
     public PhysicsMaterial2D lightOnPhysicsMaterial;
 
-    // Boolean to track whether the crate is moving downward
     private bool isGoingDown = false;
 
     public LayerMask groundLayer;
@@ -21,40 +21,38 @@ public class Crate : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Dynamic; // Set the rigidbody type to dynamic for physics interactions
-        rb.drag = 7f; // Add some linear drag to reduce sliding
+        rb.bodyType = RigidbodyType2D.Dynamic; 
+        rb.drag = 7f;
     }
     void Update()
     {
         if (lightController.IsLightOn)
         {
-            // Disable gravity and drag when lights are on
+            //Change gravity + make box never stop moving in light mode until it hits something
             pushForce = 3f;
             rb.gravityScale = 0f;
             rb.drag = 0f;
 
-            // Apply the physics material 2D to the crate's collider
+            //These physics for lights on are meant to stop the box from bouncing on walls and make it seem slide-ier
             GetComponent<Collider2D>().sharedMaterial = lightOnPhysicsMaterial;
         }
         else
         {
             pushForce = 1f;
             rb.gravityScale = 5f;
-            rb.drag = 7f; // Adjust drag value as needed
+            rb.drag = 7f; 
 
-            // Remove the physics material 2D from the crate's collider
+            /*The idea here is that when the lights are off, the physics 2d material is turned off as it 
+             would make the box without light friction-less causing problems*/
+
             GetComponent<Collider2D>().sharedMaterial = null;
         }
 
 
-        // Check if the crate is moving downward
+        //Check if the crate is moving downward
         isGoingDown = rb.velocity.y < 0;
 
-        if (rb.velocity.magnitude > maxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
-        // Check if the player is on top of the crate and prevent horizontal movement
+        /*
         if (IsPlayerOnTop())
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
@@ -66,16 +64,27 @@ public class Crate : MonoBehaviour
         }*/
     }
 
+    private void FixedUpdate()
+    {
+        if (rb.velocity.magnitude > maxSpeed && lightController.IsLightOn)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
+        else if (rb.velocity.magnitude > maxSpeedDark && !lightController.IsLightOn)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeedDark;
+        }
+
+        //Physics calculations are best suited for FixedUpdate()
+    }
+
+    //We dont need this method for now
     bool IsPlayerOnTop()
     {
-        // Get the player's collider
         Collider2D playerCollider = FindObjectOfType<Player>().GetComponent<Collider2D>();
-
-        // Check if the player's collider is directly above the crate's collider
         RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, Vector2.down, 0.1f);
         if (hit.collider != null && hit.collider.gameObject == gameObject)
         {
-            Debug.Log("Im a top");
             return true;
         }
 
@@ -85,12 +94,14 @@ public class Crate : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
+
+        //When player touches the box and when lights are on
         if (collision.gameObject.CompareTag("Player") && lightController.IsLightOn)
         {
-            // Handle player collision
             Vector2 contactNormal = collision.contacts[0].normal;
             Vector2 direction = Vector2.zero;
 
+            //Just some fancy math, speed should be primarily constant with the maxSpeed
             if (Mathf.Abs(contactNormal.x) > Mathf.Abs(contactNormal.y))
             {
                 direction.x = Mathf.Sign(collision.relativeVelocity.x); // Use relative velocity direction
@@ -109,14 +120,15 @@ public class Crate : MonoBehaviour
         }
         else
         {
-            // Handle other collisions
-            Vector2 pushDirection = (collision.transform.position - transform.position).normalized; // Calculate direction between objects
-
-            // Calculate push force magnitude
+            //Other Collisions
+            Vector2 pushDirection = (collision.transform.position - transform.position).normalized; //Calculate direction between objects
+            
+            //More Fancy Math
             float pushForceMagnitude = Mathf.Abs(Vector2.Dot(rb.velocity, pushDirection)) * pushForce;
 
             rb.AddForce(pushDirection * pushForceMagnitude, ForceMode2D.Impulse);
 
+            //Also clamps the speed to the current max speed to prevent constant acceleration and improve consistency
             if (lightController.IsLightOn)
             {
                 rb.AddForce(pushDirection * pushForceMagnitude * exaggerationFactor, ForceMode2D.Impulse);
@@ -124,22 +136,19 @@ public class Crate : MonoBehaviour
                 rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxSpeed);
             }
 
-            // Check if the collided object is stationary
+            //Check if the collided object is stationary like a wall and stops momentum entirely
             Rigidbody2D otherRigidbody = collision.collider.attachedRigidbody;
             if (otherRigidbody != null && otherRigidbody.bodyType == RigidbodyType2D.Static)
             {
-                // Zero out the velocity if the collided object is stationary
                 rb.velocity = Vector2.zero;
             }
         }
     }
 
+    //This shit is useless rn lol
     bool IsGrounded()
     {
-        // Cast a ray downward to check for ground collision
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, groundLayer);
-
-        // Return true if the ray hits the ground layer
         return hit.collider != null;
     }
 
