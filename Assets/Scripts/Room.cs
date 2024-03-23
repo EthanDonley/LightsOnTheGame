@@ -22,7 +22,7 @@ public class Room : MonoBehaviour
 
     IEnumerator DelayOffsetActivation()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
         canOffsetPlayer = true;
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -42,7 +42,7 @@ public class Room : MonoBehaviour
                     player.checkpoint = leftApproachCheckpoint.transform;
                     player.UpdateCheckpoint(leftApproachCheckpoint);
                     SomeMethodToSetCheckpoint(leftApproachCheckpoint);
-                    facingRight = true;
+                    facingRight = false;
                 }
                 else
                 {
@@ -50,7 +50,7 @@ public class Room : MonoBehaviour
                     player.checkpoint = rightApproachCheckpoint.transform;
                     player.UpdateCheckpoint(rightApproachCheckpoint);
                     SomeMethodToSetCheckpoint(rightApproachCheckpoint);
-                    facingRight = false;
+                    facingRight = true;
                 }
 
                 other.transform.position = playerPos;
@@ -78,6 +78,7 @@ public class Room : MonoBehaviour
     {
         resetButton.SetCheckpoint(newCheckpoint);
     }
+
 
     public void PlayerDied()
     {

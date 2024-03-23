@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float speed = 7f;
     [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float maxFallSpeed = -6f;
 
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform groundCheck;
@@ -19,7 +20,7 @@ public class Player : MonoBehaviour
     private bool isTouchingGround;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
-    private float jumpBufferTime = 0.2f;
+    private float jumpBufferTime = 0.15f;
     private float jumpBufferCounter;
 
     public NewReset dead;
@@ -71,7 +72,16 @@ public class Player : MonoBehaviour
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             animator.SetBool("isJumping", true);
-            Jump();
+            if (Input.GetButton("Jump"))
+            {
+                // Full jump if the jump button is held down
+                bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
+            }
+            else
+            {
+                // Half jump if the jump button was tapped
+                bulby.velocity = new Vector2(bulby.velocity.x, jumpForce * 0.7f);
+            }
             jumpBufferCounter = 0f;
 
         }
@@ -81,6 +91,16 @@ public class Player : MonoBehaviour
             coyoteTimeCounter = 0;
         }
 
+    }
+
+    void FixedUpdate()
+    {
+
+        // Clamp maximum fall speed
+        if (bulby.velocity.y < maxFallSpeed)
+        {
+            bulby.velocity = new Vector2(bulby.velocity.x, maxFallSpeed);
+        }
     }
 
     void HandleMovement()
@@ -115,7 +135,6 @@ public class Player : MonoBehaviour
     {
         if (other.CompareTag("Pit"))
         {
-            
             ResetToCheckpoint();
         }
     }
@@ -198,23 +217,11 @@ public class Player : MonoBehaviour
         return false;
     }
 
-
-    void Jump()
-    {
-        // Check if the player is already jumping with a velocity greater than or equal to the standard jumping velocity
-        if (Mathf.Abs(bulby.velocity.y) >= jumpForce)
-        {
-            return; // Don't apply jump if already jumping with sufficient velocity
-        }
-        bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
-
-        animator.SetBool("isJumping", true);
-    }
-
     public void UpdateCheckpoint(Transform newCheckpoint)
     {
         checkpoint = newCheckpoint;
     }
+
 
     public void FlipSprite(bool facingRight)
     {
