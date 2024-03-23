@@ -23,6 +23,10 @@ public class Player : MonoBehaviour
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.15f;
     private float jumpBufferCounter;
+    private float[] RayXPositions;
+
+    float PlayerHeight = 1.0f;
+    float ToeFeelDistance = 0.1f;
 
     public NewReset dead;
 
@@ -40,6 +44,7 @@ public class Player : MonoBehaviour
             Vector2 checkpointPosition = checkpoint.position;
             transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
         }
+        RayXPositions = new float[] { -0.15f, 0.0f, 0.15f, };
     }
 
     void Update()
@@ -141,11 +146,6 @@ public class Player : MonoBehaviour
         {
             ResetToCheckpoint();
         }
-        if (other.CompareTag("Wall"))
-        {
-            animator.SetBool("isJumping", false);
-            isTouchingGround = true;
-        }
     }
 
     private void ResetToCheckpoint()
@@ -209,25 +209,29 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
-        float raycastLength = 0.1f; // Adjust the length of the raycast
-
-        // Cast a ray downward from the player's feet position
-        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, raycastLength, groundLayer);
-
-        // If the ray hits the ground layer, the player is considered grounded
-        if (hit.collider != null)
+        if (bulby.velocity.y < 0.01f)
         {
-            animator.SetBool("isJumping", false);
-            return true;
-        }
-        if (isTouchingGround)
-        {
-            return true;
+            // cast a bunch, left to right, looking for ground
+            foreach (var xposition in RayXPositions)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(
+                    origin: transform.position + transform.right * xposition,
+                    direction: Vector3.down,
+                    distance: PlayerHeight / 2 + ToeFeelDistance,
+                    layerMask: groundLayer);
+
+                if (hit.collider)
+                {
+                    animator.SetBool("isJumping", false);
+                    return true;
+                }
+            }
         }
 
-        // If no ground is detected below the player, set isJumping to true
         animator.SetBool("isJumping", true);
         return false;
+
+
     }
 
     public void UpdateCheckpoint(Transform newCheckpoint)
