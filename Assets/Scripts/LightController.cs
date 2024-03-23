@@ -11,7 +11,7 @@ public class LightController : MonoBehaviour
     public bool IsLightOn
     {
         get { return isLightOn; }
-    }
+    }   
     void Update()
     {
         // Check if space bar is pressed
@@ -43,7 +43,7 @@ public class LightController : MonoBehaviour
         }
     }
 
-    void ToggleInversion(bool value)
+    public void ToggleInversion(bool value)
     {
         isLightOn = value;
         UpdateInversion();

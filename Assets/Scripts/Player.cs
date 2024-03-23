@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour
 
     Animator animator;
 
+    
     void Start()
     {
         bulby = GetComponent<Rigidbody2D>();
@@ -165,5 +167,10 @@ public class Player : MonoBehaviour
         bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
 
         animator.SetBool("isJumping", true);
+    }
+
+    public void UpdateCheckpoint(Transform newCheckpoint)
+    {
+        checkpoint = newCheckpoint;
     }
 }

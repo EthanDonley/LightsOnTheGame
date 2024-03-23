@@ -11,6 +11,8 @@ public class Room : MonoBehaviour
     public Transform rightApproachCheckpoint;
     public Player player;
 
+    public NewReset resetButton;
+
 
     private void Start()
     {
@@ -37,11 +39,15 @@ public class Room : MonoBehaviour
                 {
                     playerPos.x += offset;
                     player.checkpoint = leftApproachCheckpoint.transform;
+                    player.UpdateCheckpoint(leftApproachCheckpoint);
+                    SomeMethodToSetCheckpoint(leftApproachCheckpoint);
                 }
                 else
                 {
                     playerPos.x -= offset;
                     player.checkpoint = rightApproachCheckpoint.transform;
+                    player.UpdateCheckpoint(rightApproachCheckpoint);
+                    SomeMethodToSetCheckpoint(rightApproachCheckpoint);
                 }
 
                 other.transform.position = playerPos;
@@ -58,5 +64,10 @@ public class Room : MonoBehaviour
         {
             virtualCam.SetActive(false);
         }
+    }
+
+    public void SomeMethodToSetCheckpoint(Transform newCheckpoint)
+    {
+        resetButton.SetCheckpoint(newCheckpoint);
     }
 }
