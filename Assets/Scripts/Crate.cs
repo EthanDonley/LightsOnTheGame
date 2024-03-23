@@ -60,10 +60,10 @@ public class Crate : MonoBehaviour
             rb.velocity = new Vector2(0f, rb.velocity.y);
         }
 
-        if (isGoingDown && !IsGrounded())
+        /*if (isGoingDown && !IsGrounded())
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
-        }
+        }*/
     }
 
     bool IsPlayerOnTop()

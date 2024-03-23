@@ -8,10 +8,16 @@ public class NewReset : MonoBehaviour
     public Transform checkpoint; // Drag the checkpoint GameObject to this field in the Inspector
     public LightController light;
 
+    private GameObject[] interactables;
 
     public void SetCheckpoint(Transform newCheckpoint)
     {
         checkpoint = newCheckpoint;
+    }
+
+    private void Start()
+    {
+        interactables = GameObject.FindGameObjectsWithTag("Interactable");
     }
     private void Update()
     {
@@ -31,16 +37,16 @@ public class NewReset : MonoBehaviour
         if (player != null && checkpoint != null)
         {
             // Set player's position to the checkpoint's position
-            
-            player.transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
-
             Rigidbody2D playerRb2d = player.GetComponent<Rigidbody2D>();
             if (playerRb2d != null)
             {
                 playerRb2d.velocity = Vector2.zero;
             }
+            player.transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
+            player.CallRoomReset();
+            
 
-            GameObject[] interactables = GameObject.FindGameObjectsWithTag("Interactable");
+
             foreach (var obj in interactables)
             {
                 var resetBehavior = obj.GetComponent<ObjectResetBehavior>();
@@ -54,10 +60,40 @@ public class NewReset : MonoBehaviour
                     }
                 }
             }
+
         }
         else
         {
             Debug.LogError("Player or checkpoint not assigned in the inspector!");
         }
+    }
+
+    private IEnumerator ResetInteractables()
+    {
+        // Wait for a small amount of time before resetting interactable objects
+        yield return new WaitForSeconds(0.15f);
+
+        // Reset all objects with the "Interactable" tag to their initial positions
+        GameObject[] interactables = GameObject.FindGameObjectsWithTag("Interactable");
+        foreach (var obj in interactables)
+        {
+            var resetBehavior = obj.GetComponent<ObjectResetBehavior>();
+            if (resetBehavior != null)
+            {
+                resetBehavior.MoveToInitialPosition();
+                Rigidbody2D rb2d = obj.GetComponent<Rigidbody2D>();
+                if (rb2d != null)
+                {
+                    rb2d.velocity = Vector2.zero;
+                }
+            }
+        }
+    }
+
+    // Method to reset only objects, not the player
+    public void ResetObjects()
+    {
+        // Reset interactable objects after a delay
+        StartCoroutine(ResetInteractables());
     }
 }

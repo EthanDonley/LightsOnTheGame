@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
 
+    public NewReset dead;
+
     Animator animator;
 
     
@@ -109,6 +111,46 @@ public class Player : MonoBehaviour
         animator.SetFloat("yVelocity", bulby.velocity.y);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Pit"))
+        {
+            
+            ResetToCheckpoint();
+        }
+    }
+
+    private void ResetToCheckpoint()
+    {
+        // Retrieve the ResetButton script and call its ResetPlayerPosition method
+        NewReset resetButton = FindObjectOfType<NewReset>();
+        Room room = FindObjectOfType<Room>();
+        if (room != null)
+        {
+            room.PlayerDied();
+        }
+        else
+        {
+            Debug.LogError("Room script not found in the scene!");
+        }
+        if (resetButton != null)
+        {
+            resetButton.Reset();
+        }
+        else
+        {
+            Debug.LogError("ResetButton script not found in the scene!");
+        }
+    }
+
+    public void CallRoomReset() //This is meant to be public and called when doing Resetting specifically
+    {
+        Room room = FindObjectOfType<Room>();
+        if (room != null)
+        {
+            room.PlayerDied();
+        }
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if the player collides with the ground layer
@@ -173,4 +215,11 @@ public class Player : MonoBehaviour
     {
         checkpoint = newCheckpoint;
     }
+
+    public void FlipSprite(bool facingRight)
+    {
+        // Flip the player's sprite horizontally based on facingRight flag
+        bulbySprite.flipX = !facingRight;
+    }
+
 }

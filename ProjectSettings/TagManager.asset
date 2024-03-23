@@ -7,11 +7,12 @@ TagManager:
   - Ground
   - Wall
   - Interactable
+  - Pit
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - InteractableBlocker
   - Water
   - UI
   - Ground

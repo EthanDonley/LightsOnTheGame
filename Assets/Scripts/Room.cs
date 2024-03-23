@@ -10,6 +10,7 @@ public class Room : MonoBehaviour
     public Transform leftApproachCheckpoint;
     public Transform rightApproachCheckpoint;
     public Player player;
+    public bool facingRight;
 
     public NewReset resetButton;
 
@@ -21,7 +22,7 @@ public class Room : MonoBehaviour
 
     IEnumerator DelayOffsetActivation()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
         canOffsetPlayer = true;
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -41,6 +42,7 @@ public class Room : MonoBehaviour
                     player.checkpoint = leftApproachCheckpoint.transform;
                     player.UpdateCheckpoint(leftApproachCheckpoint);
                     SomeMethodToSetCheckpoint(leftApproachCheckpoint);
+                    facingRight = true;
                 }
                 else
                 {
@@ -48,6 +50,7 @@ public class Room : MonoBehaviour
                     player.checkpoint = rightApproachCheckpoint.transform;
                     player.UpdateCheckpoint(rightApproachCheckpoint);
                     SomeMethodToSetCheckpoint(rightApproachCheckpoint);
+                    facingRight = false;
                 }
 
                 other.transform.position = playerPos;
@@ -62,7 +65,12 @@ public class Room : MonoBehaviour
     {
         if (other.CompareTag("Player") && !other.isTrigger)
         {
+            
             virtualCam.SetActive(false);
+            if (resetButton != null)
+            {
+                resetButton.ResetObjects();
+            }
         }
     }
 
@@ -70,4 +78,12 @@ public class Room : MonoBehaviour
     {
         resetButton.SetCheckpoint(newCheckpoint);
     }
+
+    public void PlayerDied()
+    {
+        canOffsetPlayer = false;
+        StartCoroutine(DelayOffsetActivation());
+        player.FlipSprite(facingRight);
+    }
+
 }
