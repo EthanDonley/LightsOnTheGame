@@ -58,10 +58,10 @@ public class Crate : MonoBehaviour
             rb.velocity = new Vector2(0f, rb.velocity.y);
         }*/     
 
-        if (isGoingDown && !lightController.IsLightOn)
+        /*if (isGoingDown && !lightController.IsLightOn)
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
-        }
+        }*/
     }
 
     private void FixedUpdate()

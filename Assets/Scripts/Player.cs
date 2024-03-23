@@ -155,7 +155,10 @@ public class Player : MonoBehaviour
         Room room = FindObjectOfType<Room>();
         if (room != null)
         {
+
             room.PlayerDied();
+            jumpBufferCounter = 0f;
+            coyoteTimeCounter = 0f;
         }
         else
         {

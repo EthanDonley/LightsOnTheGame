@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class NewReset : MonoBehaviour
 {
-    public Player player; // Reference to the PlayerController script
-    public Transform checkpoint; // Drag the checkpoint GameObject to this field in the Inspector
+    public Player player; 
+    public Transform checkpoint;
     public LightController light;
 
     private GameObject[] interactables;
@@ -21,18 +21,16 @@ public class NewReset : MonoBehaviour
     }
     private void Update()
     {
-        // Check if the "R" key is pressed
+        //Reset button is currently assigned to R
         if (Input.GetKeyDown(KeyCode.R))
         {
-            // Call the ResetPlayerPosition function when "R" key is pressed
             Reset();
         }
     }
 
     public void Reset()
     {
-        // Check if the playerController reference is not null and if the checkpoint is assigned
-        light.ToggleInversion(false);
+        //Check if the playerController reference is not null and if the checkpoint is assigned
         Vector2 checkpointPosition = checkpoint.position;
         if (player != null && checkpoint != null)
         {
@@ -90,10 +88,9 @@ public class NewReset : MonoBehaviour
         }
     }
 
-    // Method to reset only objects, not the player
+    //Resets only objects and does it with a timer to prevent instantly appearing objects in-between transitions
     public void ResetObjects()
     {
-        // Reset interactable objects after a delay
         StartCoroutine(ResetInteractables());
     }
 }
