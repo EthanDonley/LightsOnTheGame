@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D bulby;
     private SpriteRenderer bulbySprite;
     private bool isTouchingGround;
+    private bool bufferedHalfJump = false;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.15f;
@@ -81,15 +82,18 @@ public class Player : MonoBehaviour
             {
                 // Half jump if the jump button was tapped
                 bulby.velocity = new Vector2(bulby.velocity.x, jumpForce * 0.7f);
+                bufferedHalfJump = true;
             }
             jumpBufferCounter = 0f;
 
         }
-        if (Input.GetButtonUp("Jump") && bulby.velocity.y > 0f)
+        if (Input.GetButtonUp("Jump") && bulby.velocity.y > 0f && bufferedHalfJump == false)
         {
             bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.5f);
             coyoteTimeCounter = 0;
         }
+
+        bufferedHalfJump = false;
 
     }
 
