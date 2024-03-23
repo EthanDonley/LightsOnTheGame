@@ -56,12 +56,12 @@ public class Crate : MonoBehaviour
         if (IsPlayerOnTop())
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
-        }
+        }*/     
 
-        /*if (isGoingDown && !IsGrounded())
+        if (isGoingDown && !lightController.IsLightOn)
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
-        }*/
+        }
     }
 
     private void FixedUpdate()

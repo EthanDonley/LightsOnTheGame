@@ -19811,6 +19811,10 @@ PrefabInstance:
       propertyPath: lightController
       value: 
       objectReference: {fileID: 1468090929}
+    - target: {fileID: 9214831561625460792, guid: 4b960361ba0b6584f88b09765aa59793, type: 3}
+      propertyPath: m_GravityScale
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
