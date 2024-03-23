@@ -141,6 +141,11 @@ public class Player : MonoBehaviour
         {
             ResetToCheckpoint();
         }
+        if (other.CompareTag("Wall"))
+        {
+            animator.SetBool("isJumping", false);
+            isTouchingGround = true;
+        }
     }
 
     private void ResetToCheckpoint()
@@ -213,6 +218,10 @@ public class Player : MonoBehaviour
         if (hit.collider != null)
         {
             animator.SetBool("isJumping", false);
+            return true;
+        }
+        if (isTouchingGround)
+        {
             return true;
         }
 

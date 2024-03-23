@@ -100,12 +100,12 @@ public class Crate : MonoBehaviour
                 direction.y = Mathf.Sign(contactNormal.y);
             }
 
-            rb.velocity = direction * pushForce;
+            rb.velocity = direction * maxSpeed;
 
-            if (lightController.IsLightOn)
+            /*if (lightController.IsLightOn)
             {
                 rb.velocity *= exaggerationFactor;
-            }
+            }*/
         }
         else
         {
@@ -120,6 +120,8 @@ public class Crate : MonoBehaviour
             if (lightController.IsLightOn)
             {
                 rb.AddForce(pushDirection * pushForceMagnitude * exaggerationFactor, ForceMode2D.Impulse);
+
+                rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxSpeed);
             }
 
             // Check if the collided object is stationary
