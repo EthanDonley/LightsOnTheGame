@@ -34,6 +34,12 @@ public class NewReset : MonoBehaviour
             
             player.transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
 
+            Rigidbody2D playerRb2d = player.GetComponent<Rigidbody2D>();
+            if (playerRb2d != null)
+            {
+                playerRb2d.velocity = Vector2.zero;
+            }
+
             GameObject[] interactables = GameObject.FindGameObjectsWithTag("Interactable");
             foreach (var obj in interactables)
             {
@@ -41,6 +47,11 @@ public class NewReset : MonoBehaviour
                 if (resetBehavior != null)
                 {
                     resetBehavior.MoveToInitialPosition();
+                    Rigidbody2D rb2d = obj.GetComponent<Rigidbody2D>();
+                    if (rb2d != null)
+                    {
+                        rb2d.velocity = Vector2.zero;
+                    }
                 }
             }
         }
