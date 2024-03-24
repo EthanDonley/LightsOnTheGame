@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
             Vector2 checkpointPosition = checkpoint.position;
             transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
         }
-        RayXPositions = new float[] { -0.1f, 0.0f, 0.1f, };
+        RayXPositions = new float[] { -0.13f, 0.0f, 0.11f, };
     }
 
     void Update()
