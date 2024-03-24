@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public GameObject virtualCam;
-    public float offset = 8f;
-    private bool canOffsetPlayer = false;
-    public Transform leftApproachCheckpoint;
-    public Transform rightApproachCheckpoint;
+    public GameObject virtualCam; //We can attach this in the Unity Editor
+
+    public float offset = 8f; //Basically when player enters a room they are mea
+
+    private bool canOffsetPlayer = false; //Sometimes when respawning/dying player shifts 
+
+    public Transform leftApproachCheckpoint; //Checkpoint if Player entered from left of the room
+    public Transform rightApproachCheckpoint; //Checkpoint if Player entered from right of the room
     public Player player;
     public bool facingRight;
+
 
     public NewReset resetButton;
 
@@ -19,6 +23,7 @@ public class Room : MonoBehaviour
     {
         StartCoroutine(DelayOffsetActivation());
     }
+
 
     IEnumerator DelayOffsetActivation()
     {

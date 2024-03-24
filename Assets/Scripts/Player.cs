@@ -212,9 +212,10 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
-        if (bulby.velocity.y < 0.01f)
+        // Check if the player's velocity in the y-direction is nearly zero
+        if (Mathf.Abs(bulby.velocity.y) < 0.01f)
         {
-            //cast a bunch, left to right, looking for ground
+            // Cast rays horizontally to check for ground
             foreach (var xposition in RayXPositions)
             {
                 RaycastHit2D hit = Physics2D.Raycast(
@@ -223,18 +224,22 @@ public class Player : MonoBehaviour
                     distance: PlayerHeight / 2 + ToeFeelDistance,
                     layerMask: groundLayer);
 
+                // Check if the ray hit something and if the surface is relatively flat
                 if (hit.collider)
                 {
-                    animator.SetBool("isJumping", false);
-                    return true;
+                    // Check if the normal of the surface is close to vertical (i.e., not too tilted)
+                    if (Mathf.Abs(hit.normal.y) > 0.9f)
+                    {
+                        animator.SetBool("isJumping", false);
+                        return true;
+                    }
                 }
             }
         }
 
+        // Player is not grounded
         animator.SetBool("isJumping", true);
         return false;
-
-
     }
 
     public void UpdateCheckpoint(Transform newCheckpoint)

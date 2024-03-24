@@ -17,12 +17,16 @@ public class Crate : MonoBehaviour
     private bool isGoingDown = false;
 
     public LayerMask groundLayer;
+    float BoxHeight = 0.2f;
+    float FeelDistance = 0.1f;
+    private float[] RayXPositions;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Dynamic; 
         rb.drag = 7f;
+        RayXPositions = new float[] { -0.15f, 0.0f, 0.15f, };
     }
     void Update()
     {
@@ -56,10 +60,11 @@ public class Crate : MonoBehaviour
         if (IsPlayerOnTop())
         {
             rb.velocity = new Vector2(0f, rb.velocity.y);
-        }*/     
+        }*/
 
-        /*if (isGoingDown && !lightController.IsLightOn)
+        /*if (isGoingDown && !IsGrounded())
         {
+            
             rb.velocity = new Vector2(0f, rb.velocity.y);
         }*/
     }
@@ -148,8 +153,27 @@ public class Crate : MonoBehaviour
     //This shit is useless rn lol
     bool IsGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, groundLayer);
-        return hit.collider != null;
+        if (rb.velocity.y < 0.01f)
+        {
+            // Cast a bunch, left to right, looking for ground
+            foreach (var xposition in RayXPositions)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(
+                    origin: transform.position + transform.right * xposition,
+                    direction: Vector3.down,
+                    distance: BoxHeight / 2 + FeelDistance,
+                    layerMask: groundLayer);
+
+                // Ignore collisions with own collider
+                Physics2D.IgnoreCollision(hit.collider, GetComponent<Collider2D>(), true);
+
+                if (hit.collider)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
