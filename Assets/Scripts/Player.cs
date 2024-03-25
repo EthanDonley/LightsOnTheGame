@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.UI.Image;
 
 public class Player : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class Player : MonoBehaviour
             Vector2 checkpointPosition = checkpoint.position;
             transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
         }
-        RayXPositions = new float[] { -0.15f, 0.0f, 0.15f, };
+        RayXPositions = new float[] { -0.15f, 0.0f, 0.12f, };
     }
 
     void Update()
@@ -198,6 +199,8 @@ public class Player : MonoBehaviour
         if (collision.gameObject.layer == groundLayer)
         {
             // Check if the collision contact is from the top
+
+
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 if (contact.normal.y > 0.9f) // Assuming the normal.y value is close to 1 when the collision is from the top
@@ -207,6 +210,7 @@ public class Player : MonoBehaviour
                     break; // Exit the loop once a valid contact from the top is found
                 }
             }
+
         }
     }
 
@@ -222,29 +226,53 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
+        
         if (bulby.velocity.y < 0.01f)
         {
             //cast a bunch, left to right, looking for ground
             foreach (var xposition in RayXPositions)
             {
+                Vector2 origin = transform.position + transform.right * xposition;
                 RaycastHit2D hit = Physics2D.Raycast(
-                    origin: transform.position + transform.right * xposition,
+                    origin: origin,
                     direction: Vector3.down,
                     distance: PlayerHeight / 2 + ToeFeelDistance,
                     layerMask: groundLayer);
 
-                if (hit.collider)
+                if (hit.collider && Mathf.Abs(hit.normal.y) > 0.8f)
                 {
                     animator.SetBool("isJumping", false);
                     return true;
                 }
+
+                Debug.DrawRay(origin, Vector3.down * (PlayerHeight / 2 + ToeFeelDistance), Color.green);
             }
+
+           
         }
 
         animator.SetBool("isJumping", true);
         return false;
 
 
+    }
+
+    private Vector2 GetPlatformVelocity()
+    {
+        // Cast a ray downwards to check for a platform
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer);
+        if (hit.collider != null)
+        {
+            // If the player is standing on a platform, get its velocity
+            Rigidbody2D platformRigidbody = hit.collider.GetComponent<Rigidbody2D>();
+            if (platformRigidbody != null)
+            {
+                return platformRigidbody.velocity;
+            }
+        }
+
+        // If the player is not standing on a platform, return zero
+        return Vector2.zero;
     }
 
     public void UpdateCheckpoint(Transform newCheckpoint)
