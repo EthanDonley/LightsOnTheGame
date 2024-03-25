@@ -31,6 +31,8 @@ public class Player : MonoBehaviour
     public NewReset dead;
 
     Animator animator;
+    public CoinHandler playerCoins;
+    
 
     
     void Start()
@@ -38,6 +40,7 @@ public class Player : MonoBehaviour
         bulby = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        playerCoins = GetComponent<CoinHandler>();
 
         if (checkpoint != null)
         {
@@ -145,6 +148,13 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Pit"))
         {
             ResetToCheckpoint();
+        }
+
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            playerCoins.IncrementNumCoins();
+            playerCoins.RemoveCoin(other.gameObject);
+            playerCoins.displayNumCoins();
         }
     }
 

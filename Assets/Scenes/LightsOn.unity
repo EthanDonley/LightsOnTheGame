@@ -3621,6 +3621,7 @@ GameObject:
   - component: {fileID: 103049974}
   - component: {fileID: 103049976}
   - component: {fileID: 103049977}
+  - component: {fileID: 103049978}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3744,6 +3745,7 @@ MonoBehaviour:
   groundCheck: {fileID: 2133596425}
   checkpoint: {fileID: 159001921775190759}
   dead: {fileID: 0}
+  playerCoins: {fileID: 0}
 --- !u!70 &103049973
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3943,6 +3945,21 @@ PolygonCollider2D:
       - {x: 0.7749209, y: -2.56}
       - {x: 0.8750795, y: -1.9253198}
   m_UseDelaunayMesh: 0
+--- !u!114 &103049978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103049967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6150cdc20ca6946ffbe9873f22f51ae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinsToBeSpawned: 10
+  unitsApart: 5
+  coin: {fileID: 3749946535278892095, guid: 0f1acf1e3cb9d47c4893163a10f3940c, type: 3}
 --- !u!1001 &126967434
 PrefabInstance:
   m_ObjectHideFlags: 0
