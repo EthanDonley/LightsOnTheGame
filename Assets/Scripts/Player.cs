@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
     Animator animator;
     public CoinHandler playerCoins;
     
+    
 
     
     void Start()
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
         bulbySprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         playerCoins = GetComponent<CoinHandler>();
+        
 
         if (checkpoint != null)
         {
