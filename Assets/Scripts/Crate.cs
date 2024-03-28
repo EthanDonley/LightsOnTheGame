@@ -56,6 +56,7 @@ public class Crate : MonoBehaviour
             pushForce = 3f;
             rb.gravityScale = 0f;
             rb.drag = 0f;
+            rb.mass = 100009f;
             GetComponent<Collider2D>().sharedMaterial = lightOnPhysicsMaterial;
         }
         else if (!lightController.isLightOn)
@@ -115,7 +116,6 @@ public class Crate : MonoBehaviour
         {
             Vector2 contactNormal = collision.contacts[0].normal;
             Vector2 direction = Vector2.zero;
-            rb.mass = 100000;
             
 
             //Just some fancy math, speed should be primarily constant with the maxSpeed

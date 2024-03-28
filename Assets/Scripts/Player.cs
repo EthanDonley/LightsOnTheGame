@@ -267,8 +267,37 @@ public class Player : MonoBehaviour
 
     public void FlipSprite(bool facingRight)
     {
-        // Flip the player's sprite horizontally based on facingRight flag
-        bulbySprite.flipX = !facingRight;
+        // Calculate the new scale for the sprite
+        float angle = facingRight ? 0f : 180f;
+
+        // Create a quaternion rotation around the y-axis
+        Quaternion newRotation = Quaternion.Euler(0, angle, 0);
+
+        // Apply the rotation to the sprite's transform
+        bulbySprite.transform.rotation = newRotation;
+
+        // Adjust the BoxCollider2D
+        AdjustCollider(facingRight);
     }
 
+    private void AdjustCollider(bool facingRight)
+    {
+        // Get the current size and offset of the collider
+        Vector2 size = groundCheckCollider.bounds.size;
+        Vector2 offset = groundCheckCollider.offset;
+
+        // If facing left, invert the size and offset on the x-axis
+        if (!facingRight)
+        {
+            size.x = -Mathf.Abs(size.x);
+            offset.x = -Mathf.Abs(offset.x);
+        }
+        else
+        {
+            size.x = Mathf.Abs(size.x);
+            offset.x = Mathf.Abs(offset.x);
+        }
+
+        groundCheckCollider.offset = offset;
+    }
 }
