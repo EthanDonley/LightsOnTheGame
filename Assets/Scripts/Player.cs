@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     private bool bufferedHalfJump = false;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
-    private float jumpBufferTime = 0.1f;
+    private float jumpBufferTime = 0.04f;
     private float jumpBufferCounter;
     private float[] RayXPositions;
 
@@ -32,7 +32,6 @@ public class Player : MonoBehaviour
     public NewReset dead;
 
     Animator animator;
-    public CoinHandler playerCoins;
     
     
 
@@ -42,7 +41,6 @@ public class Player : MonoBehaviour
         bulby = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        playerCoins = GetComponent<CoinHandler>();
         
 
         if (checkpoint != null)
@@ -153,12 +151,12 @@ public class Player : MonoBehaviour
             ResetToCheckpoint();
         }
 
-        if (other.gameObject.CompareTag("Coin"))
+        /*if (other.gameObject.CompareTag("Coin"))
         {
             playerCoins.IncrementNumCoins();
             playerCoins.RemoveCoin(other.gameObject);
             playerCoins.displayNumCoins();
-        }
+        }*/
     }
 
     private void ResetToCheckpoint()
