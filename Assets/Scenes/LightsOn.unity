@@ -3755,8 +3755,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87399a3b9edaab044922e22a3859803c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5.5
-  jumpForce: 8.93
+  speed: 5.4
+  jumpForce: 8.94
   maxFallSpeed: -9.4
   groundLayer:
     serializedVersion: 2
@@ -3910,12 +3910,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.89, y: 2.23}
-      - {x: -1.2018096, y: 2.23}
-      - {x: -1.2, y: -1.9}
+    - - {x: 1, y: 2.23}
+      - {x: -1.3, y: 2.23}
+      - {x: -1.3, y: -1.9}
       - {x: -0.75, y: -2.56}
       - {x: 0.53, y: -2.56}
-      - {x: 0.89, y: -1.9}
+      - {x: 1, y: -1.9}
   m_UseDelaunayMesh: 0
 --- !u!114 &103049978
 MonoBehaviour:
@@ -20079,7 +20079,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.009686232, y: -0.4091353}
+  m_Offset: {x: -0.0040085316, y: -0.48583618}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -20090,7 +20090,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.2846406, y: 0.6390254}
+  m_Size: {x: 1.1476738, y: 0.48562366}
   m_EdgeRadius: 0
 --- !u!4 &159001921775190759
 Transform:

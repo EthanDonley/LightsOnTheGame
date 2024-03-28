@@ -104,6 +104,8 @@ public class Crate : MonoBehaviour
 
         return false;
     }
+
+    
     void OnCollisionEnter2D(Collision2D collision)
     {
 
@@ -112,8 +114,8 @@ public class Crate : MonoBehaviour
         {
             Vector2 contactNormal = collision.contacts[0].normal;
             Vector2 direction = Vector2.zero;
-
             rb.mass = 100000;
+            
 
             //Just some fancy math, speed should be primarily constant with the maxSpeed
             if (Mathf.Abs(contactNormal.x) > Mathf.Abs(contactNormal.y))
@@ -127,10 +129,10 @@ public class Crate : MonoBehaviour
 
             rb.velocity = direction * maxSpeed;
 
-            /*if (lightController.IsLightOn)
+            if (lightController.IsLightOn)
             {
                 rb.velocity *= exaggerationFactor;
-            }*/
+            }
         }
         else
         {
@@ -158,6 +160,8 @@ public class Crate : MonoBehaviour
             }
         }
     }
+
+
 
     //This shit is useless rn lol
     bool IsGrounded()
