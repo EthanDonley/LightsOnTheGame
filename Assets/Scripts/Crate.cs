@@ -62,8 +62,9 @@ public class Crate : MonoBehaviour
         {
             // Restore normal physics when the lights are off
             pushForce = 1f;
-            rb.gravityScale = 6f;
+            rb.gravityScale = 4.5f;
             rb.drag = 7f;
+            rb.mass = 9f;
             GetComponent<Collider2D>().sharedMaterial = null;
         }
 
@@ -138,7 +139,7 @@ public class Crate : MonoBehaviour
         {
             //Other Collisions
             Vector2 pushDirection = (collision.transform.position - transform.position).normalized; //Calculate direction between objects
-            rb.mass = 10;
+            rb.mass = 9;
             //More Fancy Math
             float pushForceMagnitude = Mathf.Abs(Vector2.Dot(rb.velocity, pushDirection)) * pushForce;
 
