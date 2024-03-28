@@ -3,12 +3,11 @@ Shader "Custom/NewSurfaceShader"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _IsInverted("Is Inverted", Float) = 0
+        _IsInverted("Is Inverted", Float) = 0 // Use for smooth transition
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" 
-               "ForceNoShadowCasting" = "True" }
+        Tags { "RenderType"="Opaque" "ForceNoShadowCasting" = "True" }
         Cull Off
         Lighting Off // Disable lighting calculations
         ZWrite On // Enable Z-write for correct depth sorting
@@ -45,20 +44,17 @@ Shader "Custom/NewSurfaceShader"
             }
 
             fixed4 frag(v2f i) : SV_Target
-{
+            {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 float gray = dot(col.rgb, float3(0.299, 0.587, 0.114)); // Convert to grayscale
 
-                // Invert grayscale value if _IsInverted is greater than 0.5
-                if (_IsInverted > 0.5) {
-                    gray = 1.0 - gray;
-                }
+                // Convert grayscale back to RGB for inversion effect
+                fixed4 invertedGrayCol = fixed4(1.0 - gray, 1.0 - gray, 1.0 - gray, col.a);
 
-                // Invert grayscale value to map 0 to black and 1 to white
-                gray = 1.0 - gray;
+                // Interpolate based on _IsInverted. 0 for inverted colors, 1 for original colors
+                fixed4 finalColor = lerp(invertedGrayCol, col, _IsInverted); 
 
-                // Return color with inverted grayscale, preserving alpha
-                return fixed4(gray, gray, gray, col.a);
+                return finalColor;
             }
             ENDCG
         }
