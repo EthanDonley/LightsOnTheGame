@@ -25,9 +25,11 @@ public class Player : MonoBehaviour
     private float jumpBufferTime = 0.04f;
     private float jumpBufferCounter;
     private float[] RayXPositions;
+    [SerializeField] private Collider2D groundCheckCollider;
+    private bool isGrounded;
 
     float PlayerHeight = 0.6f;
-    float ToeFeelDistance = 0.1f;
+
 
     public NewReset dead;
 
@@ -48,12 +50,13 @@ public class Player : MonoBehaviour
             Vector2 checkpointPosition = checkpoint.position;
             transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
         }
-        RayXPositions = new float[] { -0.15f, 0.0f, 0.12f, };
+        RayXPositions = new float[] { -0.1f, 0.0f, 0.1f, };
     }
 
     void Update()
     {
         // Handle player movement
+        isGrounded = groundCheckCollider.IsTouchingLayers(groundLayer);
         HandleMovement();
 
         // Update coyote time counter
@@ -64,6 +67,7 @@ public class Player : MonoBehaviour
         }
         else
         {
+            animator.SetBool("isJumping", true);
             coyoteTimeCounter -= Time.deltaTime;
 
         }
@@ -224,37 +228,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private bool IsGrounded()
+    bool IsGrounded()
     {
-        
-        if (bulby.velocity.y < 0.01f)
-        {
-            //cast a bunch, left to right, looking for ground
-            foreach (var xposition in RayXPositions)
-            {
-                Vector2 origin = transform.position + transform.right * xposition;
-                RaycastHit2D hit = Physics2D.Raycast(
-                    origin: origin,
-                    direction: Vector3.down,
-                    distance: PlayerHeight / 2 + ToeFeelDistance,
-                    layerMask: groundLayer);
-
-                if (hit.collider && Mathf.Abs(hit.normal.y) > 0.8f)
-                {
-                    animator.SetBool("isJumping", false);
-                    return true;
-                }
-
-                Debug.DrawRay(origin, Vector3.down * (PlayerHeight / 2 + ToeFeelDistance), Color.green);
-            }
-
-           
-        }
-
-        animator.SetBool("isJumping", true);
-        return false;
-
-
+        return groundCheckCollider.IsTouchingLayers(groundLayer);
     }
 
     private Vector2 GetPlatformVelocity()
