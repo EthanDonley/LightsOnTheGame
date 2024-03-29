@@ -47,7 +47,6 @@ public class Room : MonoBehaviour
                     player.checkpoint = leftApproachCheckpoint.transform;
                     player.UpdateCheckpoint(leftApproachCheckpoint);
                     SomeMethodToSetCheckpoint(leftApproachCheckpoint);
-                    facingRight = false;
                 }
                 else
                 {
@@ -55,7 +54,6 @@ public class Room : MonoBehaviour
                     player.checkpoint = rightApproachCheckpoint.transform;
                     player.UpdateCheckpoint(rightApproachCheckpoint);
                     SomeMethodToSetCheckpoint(rightApproachCheckpoint);
-                    facingRight = true;
                 }
 
                 other.transform.position = playerPos;
@@ -89,7 +87,6 @@ public class Room : MonoBehaviour
     {
         canOffsetPlayer = false;
         StartCoroutine(DelayOffsetActivation());
-        player.FlipSprite(facingRight);
     }
 
 }

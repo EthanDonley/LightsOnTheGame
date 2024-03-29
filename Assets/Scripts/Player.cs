@@ -22,16 +22,23 @@ public class Player : MonoBehaviour
     private bool bufferedHalfJump = false;
     private float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
-    private float jumpBufferTime = 0.1f;
+    private float jumpBufferTime = 0.05f;
     private float jumpBufferCounter;
     private float[] RayXPositions;
-
+    [SerializeField] private Collider2D groundCheckCollider;
+    private bool isGrounded;
+    private Vector2 movementInput;
+    private bool jumpPressed = false;
+    private bool jumpReleased = false;
+    private bool buffered = false;
     float PlayerHeight = 0.6f;
-    float ToeFeelDistance = 0.1f;
+
 
     public NewReset dead;
 
     Animator animator;
+    
+    
 
     
     void Start()
@@ -39,22 +46,35 @@ public class Player : MonoBehaviour
         bulby = GetComponent<Rigidbody2D>();
         bulbySprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        
 
         if (checkpoint != null)
         {
             Vector2 checkpointPosition = checkpoint.position;
             transform.position = new Vector2(checkpointPosition.x, checkpointPosition.y);
         }
-        RayXPositions = new float[] { -0.15f, 0.0f, 0.12f, };
+        RayXPositions = new float[] { -0.1f, 0.0f, 0.1f, };
     }
 
     void Update()
     {
-        // Handle player movement
-        HandleMovement();
+        // Process inputs
+        movementInput.x = Input.GetAxis("Horizontal");
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpPressed = true;
+        }
+        else if (Input.GetButtonUp("Jump"))
+        {
+            jumpReleased = true;
+        }
+
+        isGrounded = IsGrounded();
+        
 
         // Update coyote time counter
-        if (IsGrounded())
+        if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             animator.SetBool("isJumping", false);
@@ -62,83 +82,78 @@ public class Player : MonoBehaviour
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
-
+            animator.SetBool("isJumping", true);
         }
 
-        // Jump Buffer Stuff
-        if (Input.GetButtonDown("Jump"))
+        // Handle animation flipping and running
+        HandleAnimation();
+    }
+
+    void HandleAnimation()
+    {
+        if (movementInput.x < 0)
         {
-            jumpBufferCounter = jumpBufferTime;
+            bulbySprite.flipX = true;
+        }
+        else if (movementInput.x > 0)
+        {
+            bulbySprite.flipX = false;
+        }
+        animator.SetFloat("xVelocity", Mathf.Abs(bulby.velocity.x));
+        animator.SetFloat("yVelocity", bulby.velocity.y);
+    }
+
+    void FixedUpdate()
+    {
+        // Apply horizontal movement
+        float moveHorizontal = movementInput.x * speed;
+        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
+
+        // Apply air dampening
+        if (!isGrounded && moveHorizontal == 0)
+        {
+            bulby.velocity = new Vector2(bulby.velocity.x * 0.9f, bulby.velocity.y);
+        }
+
+        if (jumpPressed)
+        {
+            jumpBufferCounter = jumpBufferTime; 
         }
         else
         {
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        // Handle player jumping
-        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
+        // Handle Jumping
+        if (jumpPressed && (coyoteTimeCounter > 0f && jumpBufferCounter > 0f))
         {
-            animator.SetBool("isJumping", true);
-            if (Input.GetButton("Jump"))
-            {
-                // Full jump if the jump button is held down
-                bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
-            }
-            else
-            {
-                // Half jump if the jump button was tapped
-                bulby.velocity = new Vector2(bulby.velocity.x, jumpForce * 0.7f);
-                bufferedHalfJump = true;
-            }
-            jumpBufferCounter = 0f;
-
+            PerformJump();
         }
-        if (Input.GetButtonUp("Jump") && bulby.velocity.y > 0f && bufferedHalfJump == false)
+
+        if (jumpReleased && bulby.velocity.y > 0)
         {
             bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.5f);
-            coyoteTimeCounter = 0;
         }
-
-        bufferedHalfJump = false;
-
-    }
-
-    void FixedUpdate()
-    {
 
         // Clamp maximum fall speed
         if (bulby.velocity.y < maxFallSpeed)
         {
             bulby.velocity = new Vector2(bulby.velocity.x, maxFallSpeed);
         }
+
+        // Reset input flags
+        jumpPressed = false;
+        jumpReleased = false;
+
     }
 
-    void HandleMovement()
+    void PerformJump()
     {
-        var userInput = Input.GetAxis("Horizontal");
-        float moveHorizontal = userInput * speed;
-
-        // Apply movement
-        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
-
-        // Apply air dampening if the player is in the air and not actively moving horizontally
-        if (!isTouchingGround && moveHorizontal == 0)
-        {
-            // Apply a dampening force to reduce horizontal velocity gradually
-            bulby.velocity = new Vector2(bulby.velocity.x * 0.95f, bulby.velocity.y);
-        }
-
-        // Flip the sprite
-        if (moveHorizontal < 0)
-        {
-            bulbySprite.flipX = true;
-        }
-        else if (moveHorizontal > 0)
-        {
-            bulbySprite.flipX = false;
-        }
-        animator.SetFloat("xVelocity", Math.Abs(bulby.velocity.x));
-        animator.SetFloat("yVelocity", bulby.velocity.y);
+        // Full jump if the jump button is held down
+        bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
+        coyoteTimeCounter = 0;
+        jumpBufferCounter = 0;
+        animator.SetBool("isJumping", true);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -147,6 +162,13 @@ public class Player : MonoBehaviour
         {
             ResetToCheckpoint();
         }
+
+        /*if (other.gameObject.CompareTag("Coin"))
+        {
+            playerCoins.IncrementNumCoins();
+            playerCoins.RemoveCoin(other.gameObject);
+            playerCoins.displayNumCoins();
+        }*/
     }
 
     private void ResetToCheckpoint()
@@ -214,37 +236,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private bool IsGrounded()
+    bool IsGrounded()
     {
-        
-        if (bulby.velocity.y < 0.01f)
-        {
-            //cast a bunch, left to right, looking for ground
-            foreach (var xposition in RayXPositions)
-            {
-                Vector2 origin = transform.position + transform.right * xposition;
-                RaycastHit2D hit = Physics2D.Raycast(
-                    origin: origin,
-                    direction: Vector3.down,
-                    distance: PlayerHeight / 2 + ToeFeelDistance,
-                    layerMask: groundLayer);
-
-                if (hit.collider && Mathf.Abs(hit.normal.y) > 0.8f)
-                {
-                    animator.SetBool("isJumping", false);
-                    return true;
-                }
-
-                Debug.DrawRay(origin, Vector3.down * (PlayerHeight / 2 + ToeFeelDistance), Color.green);
-            }
-
-           
-        }
-
-        animator.SetBool("isJumping", true);
-        return false;
-
-
+        return groundCheckCollider.IsTouchingLayers(groundLayer);
     }
 
     private Vector2 GetPlatformVelocity()
@@ -273,8 +267,37 @@ public class Player : MonoBehaviour
 
     public void FlipSprite(bool facingRight)
     {
-        // Flip the player's sprite horizontally based on facingRight flag
-        bulbySprite.flipX = !facingRight;
+        // Calculate the new scale for the sprite
+        float angle = facingRight ? 0f : 180f;
+
+        // Create a quaternion rotation around the y-axis
+        Quaternion newRotation = Quaternion.Euler(0, angle, 0);
+
+        // Apply the rotation to the sprite's transform
+        bulbySprite.transform.rotation = newRotation;
+
+        // Adjust the BoxCollider2D
+        AdjustCollider(facingRight);
     }
 
+    private void AdjustCollider(bool facingRight)
+    {
+        // Get the current size and offset of the collider
+        Vector2 size = groundCheckCollider.bounds.size;
+        Vector2 offset = groundCheckCollider.offset;
+
+        // If facing left, invert the size and offset on the x-axis
+        if (!facingRight)
+        {
+            size.x = -Mathf.Abs(size.x);
+            offset.x = -Mathf.Abs(offset.x);
+        }
+        else
+        {
+            size.x = Mathf.Abs(size.x);
+            offset.x = Mathf.Abs(offset.x);
+        }
+
+        groundCheckCollider.offset = offset;
+    }
 }

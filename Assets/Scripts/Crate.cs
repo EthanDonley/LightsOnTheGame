@@ -20,6 +20,7 @@ public class Crate : MonoBehaviour
     float BoxHeight = 0.2f;
     float FeelDistance = 0.1f;
     private float[] RayXPositions;
+    private bool previousLightState;
 
     void Start()
     {
@@ -27,60 +28,68 @@ public class Crate : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic; 
         rb.drag = 7f;
         RayXPositions = new float[] { -0.15f, 0.0f, 0.15f, };
-    }
-    void Update()
-    {
-        if (lightController.IsLightOn)
-        {
-            //Change gravity + make box never stop moving in light mode until it hits something
-            pushForce = 3f;
-            rb.gravityScale = 0f;
-            rb.drag = 0f;
-
-            //These physics for lights on are meant to stop the box from bouncing on walls and make it seem slide-ier
-            GetComponent<Collider2D>().sharedMaterial = lightOnPhysicsMaterial;
-        }
-        else
-        {
-            pushForce = 1f;
-            rb.gravityScale = 5f;
-            rb.drag = 7f; 
-
-            /*The idea here is that when the lights are off, the physics 2d material is turned off as it 
-             would make the box without light friction-less causing problems*/
-
-            GetComponent<Collider2D>().sharedMaterial = null;
-        }
-
-
-        //Check if the crate is moving downward
-        isGoingDown = rb.velocity.y < 0;
-
-        /*
-        if (IsPlayerOnTop())
-        {
-            rb.velocity = new Vector2(0f, rb.velocity.y);
-        }*/
-
-        /*if (isGoingDown && !IsGrounded())
-        {
-            
-            rb.velocity = new Vector2(0f, rb.velocity.y);
-        }*/
+        previousLightState = lightController.isLightOn;
     }
 
     private void FixedUpdate()
     {
-        if (rb.velocity.magnitude > maxSpeed && lightController.IsLightOn)
+        if (lightController.isLightOn != previousLightState)
         {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
-        else if (rb.velocity.magnitude > maxSpeedDark && !lightController.IsLightOn)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeedDark;
+            if (!lightController.isLightOn)
+            {
+                // When lights turn off, zero out horizontal velocity
+                rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+            previousLightState = lightController.isLightOn;
         }
 
+        // Adjust velocity based on light state and speed limits
+        if (rb.velocity.magnitude > (lightController.isLightOn ? maxSpeed : maxSpeedDark))
+        {
+            rb.velocity = rb.velocity.normalized * (lightController.isLightOn ? maxSpeed : maxSpeedDark);
+        }
+
+        // Prevent downward movement when lights are ON
+        if (lightController.isLightOn)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            pushForce = 3f;
+            rb.gravityScale = 0f;
+            rb.drag = 0f;
+            rb.mass = 100009f;
+            GetComponent<Collider2D>().sharedMaterial = lightOnPhysicsMaterial;
+        }
+        else if (!lightController.isLightOn)
+        {
+            // Restore normal physics when the lights are off
+            pushForce = 1f;
+            rb.gravityScale = 4.5f;
+            rb.drag = 7f;
+            rb.mass = 9f;
+            GetComponent<Collider2D>().sharedMaterial = null;
+        }
+
+
         //Physics calculations are best suited for FixedUpdate()
+    }
+
+    void PreventDownwardMovement()
+    {
+        // Temporarily set gravityScale to 0 to prevent gravity effects
+        rb.gravityScale = 0;
+
+        // Check if moving downwards or if the player is on top, applying a slight upward force to counteract the player's weight
+        // This requires a more sophisticated check to determine if the player is indeed on top of the crate
+        if (rb.velocity.y < 0 || IsPlayerOnTop())
+        {
+            // Apply an upward force just enough to counteract the downward pressure
+            rb.AddForce(Vector2.up * CalculateRequiredUpwardForce(), ForceMode2D.Force);
+        }
+    }
+
+    float CalculateRequiredUpwardForce()
+    {
+        return 9.81f * rb.mass; // Placeholder calculation, adjust as needed
     }
 
     //We dont need this method for now
@@ -97,6 +106,8 @@ public class Crate : MonoBehaviour
 
         return false;
     }
+
+    
     void OnCollisionEnter2D(Collision2D collision)
     {
 
@@ -105,6 +116,7 @@ public class Crate : MonoBehaviour
         {
             Vector2 contactNormal = collision.contacts[0].normal;
             Vector2 direction = Vector2.zero;
+            
 
             //Just some fancy math, speed should be primarily constant with the maxSpeed
             if (Mathf.Abs(contactNormal.x) > Mathf.Abs(contactNormal.y))
@@ -118,16 +130,16 @@ public class Crate : MonoBehaviour
 
             rb.velocity = direction * maxSpeed;
 
-            /*if (lightController.IsLightOn)
+            if (lightController.IsLightOn)
             {
                 rb.velocity *= exaggerationFactor;
-            }*/
+            }
         }
         else
         {
             //Other Collisions
             Vector2 pushDirection = (collision.transform.position - transform.position).normalized; //Calculate direction between objects
-            
+            rb.mass = 9;
             //More Fancy Math
             float pushForceMagnitude = Mathf.Abs(Vector2.Dot(rb.velocity, pushDirection)) * pushForce;
 
@@ -149,6 +161,8 @@ public class Crate : MonoBehaviour
             }
         }
     }
+
+
 
     //This shit is useless rn lol
     bool IsGrounded()
