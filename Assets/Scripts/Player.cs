@@ -238,7 +238,40 @@ public class Player : MonoBehaviour
 
     bool IsGrounded()
     {
-        return groundCheckCollider.IsTouchingLayers(groundLayer);
+        Vector2 position = transform.position;
+        float distance = 0.38f; // Adjust based on the expected distance to the ground
+        float width = 0.145f; // Half the width of the player's collider
+        int rayCount = 3; // Total number of rays
+        float maxGroundAngle = 45; // Maximum angle to consider a surface as ground
+        float verticalVelocityThreshold = -0.1f; // Adjust based on what you consider "not falling"
+
+        bool isGrounded = false;
+        float raySpacing = width * 2 / (rayCount - 1);
+
+        if (bulby.velocity.y > verticalVelocityThreshold)
+        {
+            for (int i = 0; i < rayCount; i++)
+        {
+            Vector2 rayOrigin = position + Vector2.left * width + Vector2.right * raySpacing * i;
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, distance, groundLayer);
+
+            if (hit.collider != null)
+            {
+                float angle = Vector2.Angle(hit.normal, Vector2.up);
+                if (angle <= maxGroundAngle)
+                {
+                    // Additional check: Ensure the hit point is below the player
+                    if (hit.point.y < position.y)
+                    {
+                        isGrounded = true;
+                        break; // Exit loop early if grounded
+                    }
+                }
+            }
+        }
+        }
+
+        return isGrounded;
     }
 
     private Vector2 GetPlatformVelocity()
@@ -267,17 +300,22 @@ public class Player : MonoBehaviour
 
     public void FlipSprite(bool facingRight)
     {
-        // Calculate the new scale for the sprite
-        float angle = facingRight ? 0f : 180f;
+        // Determine the flip direction based on the BoxCollider2D
+        bool shouldFlip = facingRight ? groundCheckCollider.offset.x > 0 : groundCheckCollider.offset.x < 0;
 
-        // Create a quaternion rotation around the y-axis
-        Quaternion newRotation = Quaternion.Euler(0, angle, 0);
+        // Flip the sprite if needed
+        if (shouldFlip)
+        {
+            // Calculate the new scale for the sprite
+            Vector3 newScale = bulbySprite.transform.localScale;
+            newScale.x *= -1f;
 
-        // Apply the rotation to the sprite's transform
-        bulbySprite.transform.rotation = newRotation;
+            // Apply the new scale to the sprite's transform
+            bulbySprite.transform.localScale = newScale;
 
-        // Adjust the BoxCollider2D
-        AdjustCollider(facingRight);
+            // Adjust the BoxCollider2D
+            AdjustCollider(!facingRight); // Pass the opposite direction since the sprite is flipped
+        }
     }
 
     private void AdjustCollider(bool facingRight)
@@ -286,18 +324,13 @@ public class Player : MonoBehaviour
         Vector2 size = groundCheckCollider.bounds.size;
         Vector2 offset = groundCheckCollider.offset;
 
-        // If facing left, invert the size and offset on the x-axis
-        if (!facingRight)
-        {
-            size.x = -Mathf.Abs(size.x);
-            offset.x = -Mathf.Abs(offset.x);
-        }
-        else
-        {
-            size.x = Mathf.Abs(size.x);
-            offset.x = Mathf.Abs(offset.x);
-        }
+        // Calculate the pivot offset based on the sprite's pivot point
+        float pivotOffset = bulbySprite.bounds.extents.x * (facingRight ? 1 : -1);
 
+        // Adjust the offset based on the pivot point
+        offset.x = pivotOffset;
+
+        // Assign the modified values back to the collider
         groundCheckCollider.offset = offset;
     }
 }
