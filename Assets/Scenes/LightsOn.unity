@@ -3752,7 +3752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87399a3b9edaab044922e22a3859803c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5.5
+  speed: 5.4
   jumpForce: 8.98
   maxFallSpeed: -9.4
   groundLayer:

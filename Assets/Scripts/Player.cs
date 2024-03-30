@@ -59,21 +59,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         // Process inputs
-        float horizontalInput = Input.GetAxisRaw("Horizontal"); // Use GetAxisRaw for less smoothing
-
-        // Determine if opposing directions are being pressed
-        bool leftPressed = horizontalInput < 0;
-        bool rightPressed = horizontalInput > 0;
-
-        // Cancel out horizontal movement if both left and right are being pressed
-        if (leftPressed && rightPressed)
-        {
-            movementInput.x = 0;
-        }
-        else
-        {
-            movementInput.x = horizontalInput;
-        }
+        movementInput.x = Input.GetAxis("Horizontal");
 
         if (Input.GetButtonDown("Jump"))
         {
@@ -127,7 +113,19 @@ public class Player : MonoBehaviour
     {
         // Apply horizontal movement
         float moveHorizontal = movementInput.x * speed;
-        bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
+
+        bool leftPressed = movementInput.x < 0;
+        bool rightPressed = movementInput.x > 0;
+
+        // Cancel out horizontal movement if both left and right are being pressed
+        if (leftPressed && rightPressed)
+        {
+            bulby.velocity = new Vector2(0, bulby.velocity.y);
+        }
+        else
+        {
+            bulby.velocity = new Vector2(moveHorizontal, bulby.velocity.y);
+        }
 
         // Apply air dampening
         if (!isGrounded && moveHorizontal == 0)
