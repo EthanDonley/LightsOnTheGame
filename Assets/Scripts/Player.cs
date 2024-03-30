@@ -59,7 +59,21 @@ public class Player : MonoBehaviour
     void Update()
     {
         // Process inputs
-        movementInput.x = Input.GetAxis("Horizontal");
+        float horizontalInput = Input.GetAxisRaw("Horizontal"); // Use GetAxisRaw for less smoothing
+
+        // Determine if opposing directions are being pressed
+        bool leftPressed = horizontalInput < 0;
+        bool rightPressed = horizontalInput > 0;
+
+        // Cancel out horizontal movement if both left and right are being pressed
+        if (leftPressed && rightPressed)
+        {
+            movementInput.x = 0;
+        }
+        else
+        {
+            movementInput.x = horizontalInput;
+        }
 
         if (Input.GetButtonDown("Jump"))
         {
