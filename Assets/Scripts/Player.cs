@@ -91,13 +91,19 @@ public class Player : MonoBehaviour
 
     void HandleAnimation()
     {
+        float scaleX = 0.15f;
+        float scaleY = 0.15f;
+        float scaleZ = 0.15f; // Assuming Z scale is also 0.15, adjust if different
+
         if (movementInput.x < 0)
         {
-            bulbySprite.flipX = true;
+            // Flip the entire GameObject to face left, preserving scale
+            transform.localScale = new Vector3(-scaleX, scaleY, scaleZ);
         }
         else if (movementInput.x > 0)
         {
-            bulbySprite.flipX = false;
+            // Flip the entire GameObject to face right, preserving scale
+            transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
         }
         animator.SetFloat("xVelocity", Mathf.Abs(bulby.velocity.x));
         animator.SetFloat("yVelocity", bulby.velocity.y);
@@ -239,41 +245,45 @@ public class Player : MonoBehaviour
     bool IsGrounded()
     {
         Vector2 position = transform.position;
-        float distance = 0.38f; // Adjust based on the expected distance to the ground
-        float width = 0.145f; // Half the width of the player's collider
-        int rayCount = 3; // Total number of rays
-        float maxGroundAngle = 45; // Maximum angle to consider a surface as ground
-        float verticalVelocityThreshold = -0.1f; // Adjust based on what you consider "not falling"
+        float distance = 0.39f; // Adjust based on the expected distance to the ground.
+        float width = 0.128f; // Half the width of the player's collider.
+        int rayCount = 3; // Total number of rays to cast.
+        float maxGroundAngle = 45; // Maximum angle to consider a surface as ground.
+        float verticalVelocityThreshold = -0.1f; // Velocity threshold for determining "falling" state.
 
         bool isGrounded = false;
-        float raySpacing = width * 2 / (rayCount - 1);
+        float raySpacing = (width * 2) / (rayCount - 1);
 
         if (bulby.velocity.y > verticalVelocityThreshold)
         {
-            for (int i = 0; i < rayCount; i++)
-        {
-            Vector2 rayOrigin = position + Vector2.left * width + Vector2.right * raySpacing * i;
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, distance, groundLayer);
-
-            if (hit.collider != null)
+            // Check directly below the player with a center ray.
+            RaycastHit2D centerHit = Physics2D.Raycast(position, Vector2.down, distance, groundLayer);
+            if (centerHit.collider != null && IsValidGround(centerHit, maxGroundAngle))
             {
-                float angle = Vector2.Angle(hit.normal, Vector2.up);
-                if (angle <= maxGroundAngle)
+                return true; // Early return if center ray detects valid ground.
+            }
+
+            // Cast rays across the player's width for comprehensive ground checking.
+            for (int i = 0; i < rayCount; i++)
+            {
+                Vector2 rayOrigin = position + Vector2.left * width + Vector2.right * raySpacing * i;
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, distance, groundLayer);
+                if (hit.collider != null && IsValidGround(hit, maxGroundAngle))
                 {
-                    // Additional check: Ensure the hit point is below the player
-                    if (hit.point.y < position.y)
-                    {
-                        isGrounded = true;
-                        break; // Exit loop early if grounded
-                    }
+                    return true; // Return true as soon as any ray detects valid ground.
                 }
             }
         }
-        }
 
-        return isGrounded;
+        return isGrounded; // Return the final grounded state.
     }
 
+    // This method now takes maxGroundAngle as a parameter to validate the ground hit.
+    bool IsValidGround(RaycastHit2D hit, float maxGroundAngle)
+    {
+        float angle = Vector2.Angle(hit.normal, Vector2.up);
+        return angle <= maxGroundAngle && hit.point.y < transform.position.y;
+    }
     private Vector2 GetPlatformVelocity()
     {
         // Cast a ray downwards to check for a platform
@@ -298,7 +308,7 @@ public class Player : MonoBehaviour
     }
 
 
-    public void FlipSprite(bool facingRight)
+    /*public void FlipSprite(bool facingRight)
     {
         // Determine the flip direction based on the BoxCollider2D
         bool shouldFlip = facingRight ? groundCheckCollider.offset.x > 0 : groundCheckCollider.offset.x < 0;
@@ -332,5 +342,5 @@ public class Player : MonoBehaviour
 
         // Assign the modified values back to the collider
         groundCheckCollider.offset = offset;
-    }
+    }*/
 }

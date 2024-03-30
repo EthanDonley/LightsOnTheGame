@@ -40,6 +40,10 @@ public class Crate : MonoBehaviour
                 // When lights turn off, zero out horizontal velocity
                 rb.velocity = new Vector2(0, rb.velocity.y);
             }
+            else
+            {
+                rb.velocity *= exaggerationFactor;
+            }
             previousLightState = lightController.isLightOn;
         }
 
