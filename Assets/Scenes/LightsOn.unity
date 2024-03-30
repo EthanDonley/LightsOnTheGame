@@ -3752,7 +3752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87399a3b9edaab044922e22a3859803c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5.54
+  speed: 5.5
   jumpForce: 8.98
   maxFallSpeed: -9.4
   groundLayer:
@@ -3827,12 +3827,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.9, y: 2.23}
-      - {x: -1.15, y: 2.23}
-      - {x: -1.15, y: -2.3}
-      - {x: -1.05, y: -2.56}
-      - {x: 0.8, y: -2.56}
-      - {x: 0.9, y: -2.3}
+    - - {x: 1, y: 2.23}
+      - {x: -1.1, y: 2.23}
+      - {x: -1.1, y: -2.1}
+      - {x: -0.7, y: -2.56}
+      - {x: 0.7, y: -2.56}
+      - {x: 1, y: -2.1}
   m_UseDelaunayMesh: 0
 --- !u!1001 &126967434
 PrefabInstance:

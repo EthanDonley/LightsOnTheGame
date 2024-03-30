@@ -245,8 +245,8 @@ public class Player : MonoBehaviour
     bool IsGrounded()
     {
         Vector2 position = transform.position;
-        float distance = 0.39f; // Adjust based on the expected distance to the ground.
-        float width = 0.128f; // Half the width of the player's collider.
+        float distance = 0.386f; // Adjust based on the expected distance to the ground.
+        float width = 0.08f; // Half the width of the player's collider.
         int rayCount = 3; // Total number of rays to cast.
         float maxGroundAngle = 45; // Maximum angle to consider a surface as ground.
         float verticalVelocityThreshold = -0.1f; // Velocity threshold for determining "falling" state.
