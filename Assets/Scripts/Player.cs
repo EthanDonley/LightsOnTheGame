@@ -130,7 +130,7 @@ public class Player : MonoBehaviour
         // Apply air dampening
         if (!isGrounded && moveHorizontal == 0)
         {
-            bulby.velocity = new Vector2(bulby.velocity.x * 0.9f, bulby.velocity.y);
+            bulby.velocity = new Vector2(bulby.velocity.x * 0.894f, bulby.velocity.y);
         }
 
         if (jumpPressed)
@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        // Handle Jumping
+        //Handle Jumping
         if (jumpPressed && (coyoteTimeCounter > 0f && jumpBufferCounter > 0f))
         {
             PerformJump();
@@ -153,13 +153,13 @@ public class Player : MonoBehaviour
             bulby.velocity = new Vector2(bulby.velocity.x, bulby.velocity.y * 0.5f);
         }
 
-        // Clamp maximum fall speed
+        //Clamp maximum fall speed
         if (bulby.velocity.y < maxFallSpeed)
         {
             bulby.velocity = new Vector2(bulby.velocity.x, maxFallSpeed);
         }
 
-        // Reset input flags
+        //Reset input flags
         jumpPressed = false;
         jumpReleased = false;
 
@@ -257,8 +257,8 @@ public class Player : MonoBehaviour
     bool IsGrounded()
     {
         Vector2 position = transform.position;
-        float distance = 0.386f; // Adjust based on the expected distance to the ground.
-        float width = 0.08f; // Half the width of the player's collider.
+        float distance = 0.387f; // Adjust based on the expected distance to the ground.
+        float width = 0.095f; // Half the width of the player's collider.
         int rayCount = 3; // Total number of rays to cast.
         float maxGroundAngle = 45; // Maximum angle to consider a surface as ground.
         float verticalVelocityThreshold = -0.1f; // Velocity threshold for determining "falling" state.
@@ -318,41 +318,4 @@ public class Player : MonoBehaviour
     {
         checkpoint = newCheckpoint;
     }
-
-
-    /*public void FlipSprite(bool facingRight)
-    {
-        // Determine the flip direction based on the BoxCollider2D
-        bool shouldFlip = facingRight ? groundCheckCollider.offset.x > 0 : groundCheckCollider.offset.x < 0;
-
-        // Flip the sprite if needed
-        if (shouldFlip)
-        {
-            // Calculate the new scale for the sprite
-            Vector3 newScale = bulbySprite.transform.localScale;
-            newScale.x *= -1f;
-
-            // Apply the new scale to the sprite's transform
-            bulbySprite.transform.localScale = newScale;
-
-            // Adjust the BoxCollider2D
-            AdjustCollider(!facingRight); // Pass the opposite direction since the sprite is flipped
-        }
-    }
-
-    private void AdjustCollider(bool facingRight)
-    {
-        // Get the current size and offset of the collider
-        Vector2 size = groundCheckCollider.bounds.size;
-        Vector2 offset = groundCheckCollider.offset;
-
-        // Calculate the pivot offset based on the sprite's pivot point
-        float pivotOffset = bulbySprite.bounds.extents.x * (facingRight ? 1 : -1);
-
-        // Adjust the offset based on the pivot point
-        offset.x = pivotOffset;
-
-        // Assign the modified values back to the collider
-        groundCheckCollider.offset = offset;
-    }*/
 }
