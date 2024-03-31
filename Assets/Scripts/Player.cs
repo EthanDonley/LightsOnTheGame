@@ -7,6 +7,9 @@ using static UnityEngine.UI.Image;
 
 public class Player : MonoBehaviour
 {
+
+    public ParticleSystem dust;
+
     [SerializeField] private float speed = 7f;
     [SerializeField] private float jumpForce = 7f;
     [SerializeField] private float maxFallSpeed = -6f;
@@ -31,7 +34,9 @@ public class Player : MonoBehaviour
     private bool jumpPressed = false;
     private bool jumpReleased = false;
     private bool buffered = false;
+    private bool isFacingRight = true;
     float PlayerHeight = 0.6f;
+    
 
 
     public NewReset dead;
@@ -99,11 +104,14 @@ public class Player : MonoBehaviour
         {
             // Flip the entire GameObject to face left, preserving scale
             transform.localScale = new Vector3(-scaleX, scaleY, scaleZ);
+            isFacingRight = false;
         }
         else if (movementInput.x > 0)
         {
             // Flip the entire GameObject to face right, preserving scale
             transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
+            isFacingRight = true;
+
         }
         animator.SetFloat("xVelocity", Mathf.Abs(bulby.velocity.x));
         animator.SetFloat("yVelocity", bulby.velocity.y);
@@ -171,15 +179,18 @@ public class Player : MonoBehaviour
         bulby.velocity = new Vector2(bulby.velocity.x, jumpForce);
         coyoteTimeCounter = 0;
         jumpBufferCounter = 0;
+        CreateDust();
         animator.SetBool("isJumping", true);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Pit"))
+        if (other.CompareTag("Pit") || other.CompareTag("Swappable"))
         {
             ResetToCheckpoint();
         }
+
+
 
         /*if (other.gameObject.CompareTag("Coin"))
         {
@@ -254,6 +265,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    public bool checkDirectionFacing()
+    {
+        return isFacingRight;
+    }
     bool IsGrounded()
     {
         Vector2 position = transform.position;
@@ -317,5 +332,10 @@ public class Player : MonoBehaviour
     public void UpdateCheckpoint(Transform newCheckpoint)
     {
         checkpoint = newCheckpoint;
+    }
+
+    void CreateDust()
+    {
+        dust.Play();
     }
 }
