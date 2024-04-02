@@ -360,8 +360,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dust: {fileID: 1438180512}
-  speed: 5.43
-  jumpForce: 9.01
+  speed: 5.23
+  jumpForce: 9.02
   maxFallSpeed: -9.7
   groundLayer:
     serializedVersion: 2
@@ -27833,7 +27833,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5668064158774384422, guid: 4b960361ba0b6584f88b09765aa59793, type: 3}
       propertyPath: maxSpeed
-      value: 5.15
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5668064158774384422, guid: 4b960361ba0b6584f88b09765aa59793, type: 3}
       propertyPath: groundCheck
