@@ -273,18 +273,19 @@ public class Player : MonoBehaviour
     {
         Vector2 position = transform.position;
         float distance = 0.387f; // Adjust based on the expected distance to the ground.
-        float width = 0.095f; // Half the width of the player's collider.
+        float width = 0.0735f; // Half the width of the player's collider.
         int rayCount = 3; // Total number of rays to cast.
         float maxGroundAngle = 45; // Maximum angle to consider a surface as ground.
         float verticalVelocityThreshold = -0.1f; // Velocity threshold for determining "falling" state.
+        float leftOffset = 0.24f;
 
         bool isGrounded = false;
-        float raySpacing = (width * 2) / (rayCount - 1);
+        float raySpacing = ((width * 2) + leftOffset) / (rayCount - 1);
 
         if (bulby.velocity.y > verticalVelocityThreshold)
         {
             // Check directly below the player with a center ray.
-            RaycastHit2D centerHit = Physics2D.Raycast(position, Vector2.down, distance, groundLayer);
+            RaycastHit2D centerHit = Physics2D.Raycast(position + Vector2.left * leftOffset / 2, Vector2.down, distance, groundLayer);
             if (centerHit.collider != null && IsValidGround(centerHit, maxGroundAngle))
             {
                 return true; // Early return if center ray detects valid ground.
@@ -293,7 +294,7 @@ public class Player : MonoBehaviour
             // Cast rays across the player's width for comprehensive ground checking.
             for (int i = 0; i < rayCount; i++)
             {
-                Vector2 rayOrigin = position + Vector2.left * width + Vector2.right * raySpacing * i;
+                Vector2 rayOrigin = position + Vector2.left * (width + leftOffset) + Vector2.right * raySpacing * i;
                 RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, distance, groundLayer);
                 if (hit.collider != null && IsValidGround(hit, maxGroundAngle))
                 {
